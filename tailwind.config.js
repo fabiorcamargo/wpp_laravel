@@ -24,7 +24,18 @@ export default {
     plugins: [forms, typography, require("daisyui")],
 
     daisyui: {
-        themes: ["light", "dark", "cupcake"],
+        themes: ["light", 
+        {
+            dark: {
+              ...require("daisyui/src/theming/themes")["dark"],
+
+
+              "base-100": "#1f2937",
+              "base-200": "#111827",
+
+            },
+          },
+        , "cupcake"],
       },
     
 };

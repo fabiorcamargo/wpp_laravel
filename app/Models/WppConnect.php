@@ -24,5 +24,15 @@ class WppConnect extends Model
         return $this->hasMany(WppMessage::class);
     }
 
+    public function Groups(): HasMany
+    {
+        return $this->hasMany(WppGroup::class);
+    }
+
+    public function Schedule(): HasMany
+    {
+        return $this->hasMany(WppSchedule::class);
+    }
+
 }
 

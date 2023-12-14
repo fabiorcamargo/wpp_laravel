@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\WppConnect;
+use App\Models\WppMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,17 +21,13 @@ class WppInstanceMessageSend implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    protected $phone;
-    protected $number;
+
     protected $message;
-    protected $wpp;
 
 
-        public function __construct($phone, $number, $message)
+        public function __construct($mensagem)
     {
-        $this->phone = $phone;
-        $this->number = $number;
-        $this->message = $message;
+        $this->message = $mensagem;
     }
 
     /**
@@ -39,12 +36,13 @@ class WppInstanceMessageSend implements ShouldQueue
     public function handle(): void
     {
 
-        $wpp = WppConnect::where('phone', $this->phone)->first();
+        $wpp = $this->message->wpp;
 
+        
         $body = [
-            "phone"=> $this->number,
-            "message"=> $this->message,
-            "isGroup"=> false
+            "phone"=> $this->message->phone,
+            "message"=> $this->message->body,
+            "isGroup"=> $this->message->group == 1 ? true : false
         ];
 
         $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/send-message';
@@ -64,12 +62,13 @@ class WppInstanceMessageSend implements ShouldQueue
             $data = $response->json()['response'][0];
 
             $data['wppid'] = $data['id'];
-            $data['phone'] = $this->number;
+            $data['phone'] = $this->message->phone;
+            $data['status'] = "ENVIADO";
 
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
 
-                $wpp->Messages()->create($data);
+            $this->message->update($data);
                 
             } else {
                 // Lidar com erros de resposta HTTP
@@ -85,16 +84,15 @@ class WppInstanceMessageSend implements ShouldQueue
                 // Faça o que quiser com a resposta de erro
                 echo "Erro na solicitação: Status $statusCode, Response: $errorBody";
 
-                /* $this->wpp->update([
-                    'status' => 'Erro'
-                ]);*/
+                $data['status'] = "ERRO";
+
+                $this->message->update($data);
             } else {
                 // Lidar com outros tipos de erros (por exemplo, problemas de rede)
                 echo "Erro na solicitação: " . $e->getMessage();
 
-                /*$this->wpp->update([
-                    'status' => 'Erro'
-                ]);*/
+                $data['status'] = "ERRO";
+                $this->message->update($data);
             }
         }
     }

@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Jobs\WppScheduleJob;
+use App\Models\WppSchedule;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,6 +15,21 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+
+        $schedule->call(function () {
+            $now = now()->format('H:i:s');
+            $nowm = now()->addMinute()->format('H:i:s');
+            $day = now();
+
+            $firstJob = WppSchedule::where('time', '>=', $now)
+                ->where('time', '<', $nowm)
+                ->where('repeat', '>=',  1)
+                ->first();
+
+            if ($firstJob) {
+                dispatch(new WppScheduleJob($firstJob, $now, $nowm, $day));
+            }
+        })->everyMinute()->name('Call-Schedule-Job');
     }
 
     /**
@@ -20,7 +37,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

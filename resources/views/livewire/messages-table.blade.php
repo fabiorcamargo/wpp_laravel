@@ -1,4 +1,4 @@
-<div class="grid flex-grow card w-full bg-base-100 shadow-xl m-2">
+<div class="card bg-base-100 shadow">
     {{--<figure class="pt-8 "><img class=' w-24 ' src="{{asset('Logo Vetorial.svg')}}" alt="logo" />
     </figure>
     --}}
@@ -13,16 +13,21 @@
                         <th>Data</th>
                         <th>Número</th>
                         <th>Mensagem</th>
-
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <div wire:poll> 
                     @foreach($mensagens as $mensagem)
                     <tr>
-                        <th>{{ $mensagem->created_at->format('d/m/y H:i:s') }}</th>
+                        <td>{{ $mensagem->created_at->format('d/m/y H:i:s') }}</td>
                         <td>{{ $mensagem->phone }}</td>
                         <td>{{ $mensagem->body }}</td>
+                        @if ($mensagem->status == 'ENVIADO')
+                        <td class="badge badge-success badge-sm gap-2">{{ $mensagem->status }}</td>
+                        @elseif ($mensagem->status == 'ERRO')
+                        <td class="badge badge-error badge-sm gap-2">{{ $mensagem->status }}</td>
+                        @endif
                     </tr>
                     @endforeach
                     </div>
@@ -31,14 +36,9 @@
         </div>
 
 
-        <div class="join justify-end">
+        <div class="join justify-end pt-8">
 
-            @php $curp = $mensagens->links()->paginator->currentPage() @endphp
-            @foreach($mensagens->links()->elements[0] as $key => $element)
-
-            <a href="{{$element}}" class="join-item btn {{$curp == $key ? 'btn-primary' : ''}}">{{$key}}</a>
-
-            @endforeach
+       {{ $mensagens->links(data: ['scrollTo' => false]) }}
         </div>
     </div>
 

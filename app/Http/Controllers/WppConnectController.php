@@ -8,6 +8,8 @@ use App\Jobs\WppInstanceMessageSend;
 use App\Jobs\WppInstanceStartSession;
 use App\Jobs\WppInstanceStatus;
 use App\Models\WppConnect;
+use App\Models\WppGroup;
+use App\Models\WppMessage;
 use GuzzleHttp\Client;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Client\Response;
@@ -48,7 +50,7 @@ class WppConnectController extends Controller
         $request['status'] = 'CRIANDO';
         $wpp = auth()->user()->getWpp()->create($request->all());
 
-        
+
         $request->session()->flash('flash.banner', 'Instância enviada para criação');
 
         return back();
@@ -59,7 +61,7 @@ class WppConnectController extends Controller
      */
     public function show($wppConnect)
     {
-        
+
         return view('wpp.show', ['wpp' => WppConnect::find($wppConnect)]);
     }
 
@@ -111,10 +113,10 @@ class WppConnectController extends Controller
 
                 // Salvar o stream em um arquivo temporário
                 Storage::put('qr.png', $image);
-        
+
                 // Caminho para o arquivo salvo
                 $imagePath = Storage::path('qr.png');
-        
+
                 // Retornar a imagem como resposta
                 return response()->file($imagePath);
             } else {
@@ -135,7 +137,7 @@ class WppConnectController extends Controller
         $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/start-session';
 
         try {
-            
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $wpp->token,
             ])->post($url);
@@ -144,7 +146,7 @@ class WppConnectController extends Controller
             if ($response->getStatusCode() === 200) {
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
-                
+
                 $responseData = $response->json();
                 $status = $responseData['status'];
 
@@ -189,7 +191,7 @@ class WppConnectController extends Controller
         $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/status-session';
 
         try {
-            
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $wpp->token,
             ])->get($url);
@@ -234,14 +236,38 @@ class WppConnectController extends Controller
         }
     }
 
-    public function SendMessage($name, $phone, $msg)
+    public function SendMessage($session, $phone, $msg, $group)
     {
-     
-        $wpp = WppConnect::where('name', $name)->first();
-        $phone = "55" . $phone;
 
-        dispatch(new WppInstanceMessageSend($wpp->phone, $phone, $msg));
-        
+        $wpp = WppConnect::where('session', $session)->first();
+        if($group == false){
+            $phone = strlen($phone) > 11 ? "55" . $phone : $phone;
+        }
+
+        $data = [
+            'phone' => $phone,
+            'type' => 'chat',
+            'body' => $msg,
+            'group' => $group
+        ];
+
+        $mensagem = $wpp->Messages()->create($data);
+
+        dispatch(new WppInstanceMessageSend($mensagem));
+    }
+
+    public function SendMessageApi(Request $request)
+    {
+        //dd($request->all());
+        $wpp = WppConnect::where('session', $request->session)->first();
+
+        //dd($wpp);
+        if ($wpp->user_id == $request->user()->id) {
+            $this->SendMessage($wpp->session, $request->phone, $request->body, $request->group);
+            return 'Enviado para fila com sucesso';
+        } else {
+            return 'Não autorizado';
+        }
     }
 
     public function StopInstance($id)
@@ -252,7 +278,7 @@ class WppConnectController extends Controller
         $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/close-session';
 
         try {
-            
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $wpp->token,
             ])->post($url);
@@ -294,6 +320,88 @@ class WppConnectController extends Controller
                     'status' => 'Erro'
                 ]);*/
             }
+        }
+    }
+
+    public function get_groups($id)
+    {
+
+        $wpp = WppConnect::find($id);
+
+        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/all-groups';
+
+        try {
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $wpp->token,
+            ])->get($url);
+
+            // Verifique o status da resposta
+            if ($response->getStatusCode() === 200) {
+                // A solicitação foi bem-sucedida
+                // Faça algo com os dados
+
+                $responseData = $response->json();
+                $status = $responseData['status'];
+
+                //dd( ($responseData['response']));
+
+                $this->up_groups($responseData, $wpp);
+                return $status;
+            } else {
+                // Lidar com erros de resposta HTTP
+                echo 'Erro na solicitação: ' . $response->getStatusCode();
+            }
+        } catch (RequestException $e) {
+            // Captura exceções do Guzzle
+            if ($e->hasResponse()) {
+                // Se houver uma resposta HTTP no erro, você pode acessá-la
+                $response = $e->getResponse();
+                $statusCode = $response->getStatusCode();
+                $errorBody = $response->getBody()->getContents();
+                // Faça o que quiser com a resposta de erro
+                echo "Erro na solicitação: Status $statusCode, Response: $errorBody";
+
+                /* $this->wpp->update([
+                    'status' => 'Erro'
+                ]);*/
+            } else {
+                // Lidar com outros tipos de erros (por exemplo, problemas de rede)
+                echo "Erro na solicitação: " . $e->getMessage();
+
+                /*$this->wpp->update([
+                    'status' => 'Erro'
+                ]);*/
+            }
+        }
+    }
+
+    public function up_groups($data, $wpp)
+    {
+        //dd($data);
+        //dd($wpp);
+
+        foreach ($data['response'] as $key => $group) {
+
+            
+            if(isset($group['groupMetadata']['creation'])){
+                $create = strlen($group['groupMetadata']['creation']) > 10 ? date("Y-m-d H:i:s", $group['groupMetadata']['creation']/1000) : date("Y-m-d H:i:s",$group['groupMetadata']['creation']);
+            }else{
+                $create = '';
+            }
+
+            
+                if (strlen($group['contact']['id']['user']) > 11) {
+                    //dd($wpp->Groups()->where('group_id', $group['contact']['id']['user'])->exists());
+                    if(!$wpp->Groups()->where('group_id', $group['contact']['id']['user'])->exists())
+                    $wpp->Groups()->create([
+                        'group_id' => $group['contact']['id']['user'],
+                        'name' => isset($group['contact']['name']) ? $group['contact']['name'] : 'Sem Nome',
+                        'creation' =>  $create
+                    ]);
+
+                }
+            
         }
     }
 }

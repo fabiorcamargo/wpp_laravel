@@ -11,7 +11,7 @@ class SendMsgForm extends Component
 {
 
     public $phone;
-    public $name;
+    public $session;
     public $msg;
     public $isVisible = true;
 
@@ -33,7 +33,7 @@ class SendMsgForm extends Component
         $this->validate();
 
         $wpp = new WppConnectController;
-        $wpp->SendMessage($this->name, $this->phone, $this->msg);
+        $wpp->SendMessage($this->session, $this->phone, $this->msg, false);
 
 
         $this->phone = '';

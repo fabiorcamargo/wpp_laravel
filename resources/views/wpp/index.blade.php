@@ -29,6 +29,7 @@
                         <!-- head -->
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Nome</th>
                                 <th>Whatsapp</th>
                                 <th>Status</th>
@@ -47,6 +48,17 @@
                                     <div class="flex items-center space-x-3">
                                         <div>
                                             <a href="{{route('wpp.show', ['wpp' => $data])}}">
+                                            <div class="">{{ $data->session }}</div>
+                                            </a>
+                                            {{--<div class="text-sm opacity-50">United States</div>--}}
+                                        </div>
+                                    </div>
+                                </td>
+                                
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <div>
+                                            <a href="{{route('wpp.show', ['wpp' => $data])}}">
                                                 <div class="">{{ $data->name }}</div>
                                             </a>
 
@@ -54,6 +66,9 @@
                                         </div>
                                     </div>
                                 </td>
+
+                                
+
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div>
@@ -63,6 +78,8 @@
                                         </div>
                                     </div>
                                 </td>
+
+                                
 
                                 <td>
                                     @if($data->status == 'CRIADO')
@@ -109,7 +126,7 @@
 
                             <div class="card-body">
                                 <div id="upload-container" class="text-center">
-                                    <label for="my_modal_7" class="btn">Nova Instância</label>
+                                    <label for="my_modal_7" class="btn btn-primary">Nova Instância</label>
                                 </div>
                             </div>
 

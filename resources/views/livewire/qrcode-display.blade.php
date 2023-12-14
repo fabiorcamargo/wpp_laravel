@@ -3,7 +3,7 @@
 </div>
 
 <script>
-    document.addEventListener('livewire:load', function () {
+    document.addEventListener('livewire:init', function () {
         setInterval(function () {
             @this.call('refreshQRCode');
         }, 10000); // Atualiza a cada 10 segundos
