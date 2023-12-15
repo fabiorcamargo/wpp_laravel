@@ -295,7 +295,7 @@ class WppConnectController extends Controller
             'buttonText' => $button,
             'sections' => [
                 'title' => $title,
-                'rows' => json_decode($rows)
+                'rows' => $rows
             ]
         ]);
 
