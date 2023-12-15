@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WppRules;
 use App\Jobs\WppInstanceCreate;
 use App\Jobs\WppInstanceImgSend;
+use App\Jobs\WppInstanceListSend;
 use App\Jobs\WppInstanceMessageSend;
 use App\Jobs\WppInstanceStartSession;
 use App\Jobs\WppInstanceStatus;
@@ -308,7 +309,7 @@ class WppConnectController extends Controller
 
         $mensagem = $wpp->Messages()->create($data);
 
-        dispatch(new WppInstanceImgSend($mensagem));
+        dispatch(new WppInstanceListSend($mensagem));
     }
 
 
