@@ -24,4 +24,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/wpp/send/', [WppConnectController::class, 'SendMessageApi']);
 
+    Route::post('/wpp/send_img/', [WppConnectController::class, 'SendMessageApi']);
+
 });

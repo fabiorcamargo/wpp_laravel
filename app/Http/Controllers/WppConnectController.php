@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\WppRules;
 use App\Jobs\WppInstanceCreate;
+use App\Jobs\WppInstanceImgSend;
 use App\Jobs\WppInstanceMessageSend;
 use App\Jobs\WppInstanceStartSession;
 use App\Jobs\WppInstanceStatus;
@@ -256,6 +257,31 @@ class WppConnectController extends Controller
         dispatch(new WppInstanceMessageSend($mensagem));
     }
 
+    public function SendImg($session, $phone, $msg, $group, $img)
+    {
+
+        $wpp = WppConnect::where('session', $session)->first();
+        if($group == false){
+            $phone = strlen($phone) > 11 ? "55" . $phone : $phone;
+        }
+
+        $body = json_encode([
+            'msg' => $msg,
+            'img' => $img
+        ]);
+
+        $data = [
+            'phone' => $phone,
+            'type' => 'img',
+            'body' => $body,
+            'group' => $group
+        ];
+
+        $mensagem = $wpp->Messages()->create($data);
+
+        dispatch(new WppInstanceImgSend($mensagem));
+    }
+
     public function SendMessageApi(Request $request)
     {
         //dd($request->all());
@@ -264,6 +290,20 @@ class WppConnectController extends Controller
         //dd($wpp);
         if ($wpp->user_id == $request->user()->id) {
             $this->SendMessage($wpp->session, $request->phone, $request->body, $request->group);
+            return 'Enviado para fila com sucesso';
+        } else {
+            return 'Não autorizado';
+        }
+    }
+
+    public function SendImgApi(Request $request)
+    {
+        //dd($request->all());
+        $wpp = WppConnect::where('session', $request->session)->first();
+
+        //dd($wpp);
+        if ($wpp->user_id == $request->user()->id) {
+            $this->SendImg($wpp->session, $request->phone, $request->body, $request->group, $request->img);
             return 'Enviado para fila com sucesso';
         } else {
             return 'Não autorizado';
