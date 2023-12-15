@@ -282,6 +282,36 @@ class WppConnectController extends Controller
         dispatch(new WppInstanceImgSend($mensagem));
     }
 
+    public function SendList($session, $phone, $desc, $button, $title, $rows, $group)
+    {
+
+        $wpp = WppConnect::where('session', $session)->first();
+        if($group == false){
+            $phone = strlen($phone) > 11 ? "55" . $phone : $phone;
+        }
+
+        $body = json_encode([
+            'description' => $desc,
+            'buttonText' => $button,
+            'sections' => [
+                'title' => $title,
+                'rows' => json_decode($rows)
+            ]
+        ]);
+
+        $data = [
+            'phone' => $phone,
+            'type' => 'list',
+            'body' => $body,
+            'group' => $group
+        ];
+
+        $mensagem = $wpp->Messages()->create($data);
+
+        dispatch(new WppInstanceImgSend($mensagem));
+    }
+
+
     public function SendMessageApi(Request $request)
     {
         //dd($request->all());
@@ -309,6 +339,22 @@ class WppConnectController extends Controller
             return 'Não autorizado';
         }
     }
+
+    public function SendListApi(Request $request)
+    {
+        //dd($request->all());
+        $wpp = WppConnect::where('session', $request->session)->first();
+
+        //dd($wpp);
+
+        if ($wpp->user_id == $request->user()->id) {
+            $this->SendList($wpp->session, $request->phone, $request->desc, $request->button, $request->title, $request->rows, $request->group);
+            return 'Enviado para fila com sucesso';
+        } else {
+            return 'Não autorizado';
+        }
+    }
+    
 
     public function StopInstance($id)
     {
