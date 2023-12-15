@@ -4,12 +4,12 @@
         <div class="card-body">
             <div class="flex-1 min-w-0">
                 <span class="block text-base font-semibold text-gray-900 truncate dark:text-white">
-                    Fábio
+                    {{$wpp->name}}
                 </span>
-                <a href="#"
+                <p
                     class="block text-sm font-normal truncate text-primary-700 hover:underline dark:text-primary-500">
-                    ssdfsd1f56s1df56sd1
-                </a>
+                    +55{{$wpp->phone}}
+            </p>
             </div>
             @if($status == 'CONNECTED')
                 <div class="flex items-center">

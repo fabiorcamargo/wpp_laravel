@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Http\Controllers\WppConnectController;
+use App\Models\WppConnect;
 use Livewire\Component;
 
 class StatusSessionLw extends Component
@@ -25,6 +26,7 @@ class StatusSessionLw extends Component
     public function render() {
         $wpp = new WppConnectController;
         $this->status = $wpp->StatusSession($this->id);
+        $this->wpp = WppConnect::find($this->id);
         return view('livewire.status-session-lw', );
     }
 
