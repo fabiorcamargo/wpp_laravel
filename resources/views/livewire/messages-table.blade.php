@@ -22,7 +22,13 @@
                     <tr>
                         <td>{{ $mensagem->created_at->format('d/m/y H:i:s') }}</td>
                         <td>{{ $mensagem->phone }}</td>
+                        @if($mensagem->type == "chat")
                         <td>{{ $mensagem->body }}</td>
+                        @elseif($mensagem->type == "img")
+                        <td>Imagem</td>
+                        @elseif($mensagem->type == "list")
+                        <td>Lista</td>
+                        @endif
                         @if ($mensagem->status == 'ENVIADO')
                         <td class="badge badge-success badge-sm gap-2">{{ $mensagem->status }}</td>
                         @elseif ($mensagem->status == 'ERRO')
