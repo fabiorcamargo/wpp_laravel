@@ -302,9 +302,9 @@ class WppConnectController extends Controller
 
         $data = [
             'phone' => $phone,
+            'group' => $group,
             'type' => 'list',
-            'body' => $body,
-            'group' => $group
+            'body' => $body
         ];
 
         $mensagem = $wpp->Messages()->create($data);

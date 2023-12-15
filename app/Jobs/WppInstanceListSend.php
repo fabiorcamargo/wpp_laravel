@@ -36,7 +36,9 @@ class WppInstanceListSend implements ShouldQueue
         $body = [
             "phone" => $this->message->phone,
             "isGroup" => $this->message->group == 1 ? true : false,
-            json_decode($this->message->body)
+            "description" => json_decode($this->message->body)->description,
+            "buttonText" => json_decode($this->message->body)->buttonText,
+            "sections" => json_decode($this->message->body)->sections
         ];
 
         $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/send-list-message';
