@@ -257,7 +257,7 @@ class WppConnectController extends Controller
         dispatch(new WppInstanceMessageSend($mensagem));
     }
 
-    public function SendImg($session, $phone, $msg, $group, $img)
+    public function SendImg($session, $phone, $msg, $img, $group)
     {
 
         $wpp = WppConnect::where('session', $session)->first();
@@ -303,7 +303,7 @@ class WppConnectController extends Controller
 
         //dd($wpp);
         if ($wpp->user_id == $request->user()->id) {
-            $this->SendImg($wpp->session, $request->phone, $request->body, $request->group, $request->img);
+            $this->SendImg($wpp->session, $request->phone, $request->body, $request->group, $request->img, $request->group);
             return 'Enviado para fila com sucesso';
         } else {
             return 'Não autorizado';
