@@ -303,7 +303,7 @@ class WppConnectController extends Controller
 
         //dd($wpp);
         if ($wpp->user_id == $request->user()->id) {
-            $this->SendImg($wpp->session, $request->phone, $request->body, $request->group, $request->img, $request->group);
+            $this->SendImg($wpp->session, $request->phone, $request->body, $request->img, $request->group);
             return 'Enviado para fila com sucesso';
         } else {
             return 'Não autorizado';
