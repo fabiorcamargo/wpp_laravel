@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Jobs\WppScheduleJob;
 use App\Models\WppSchedule;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -19,11 +20,12 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             $now = now()->format('H:i:s');
             $nowm = now()->addMinute()->format('H:i:s');
-            $day = now();
+            $day = Carbon::parse(now());
 
             $firstJob = WppSchedule::where('time', '>=', $now)
                 ->where('time', '<', $nowm)
                 ->where('repeat', '>=',  1)
+                ->where('date', '<=',  $day)
                 ->first();
 
             if ($firstJob) {

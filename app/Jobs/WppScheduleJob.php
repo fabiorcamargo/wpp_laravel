@@ -48,6 +48,7 @@ class WppScheduleJob implements ShouldQueue
             ->where('time', '<', $this->nowm)
             ->where('id', '>',  $this->sch->id)
             ->where('repeat', '>=',  1)
+            ->where('date', '<=',  $this->day)
             ->first();
 
 

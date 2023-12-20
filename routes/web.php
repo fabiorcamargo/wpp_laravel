@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Jobs\S3Upload;
 use App\Mail\TestMail;
 use App\Models\WppConnect;
+use App\Models\WppSchedule;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Mail;
@@ -66,7 +68,17 @@ Route::middleware([
     Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
     Route::post('upload', [UploadController::class, 'store'])->name('upload.store');
     Route::get('test_email', function(){
-        Mail::to('fabiorcamargo@gmail.com')
-        ->send(new TestMail());
+        $now = now()->format('H:i:s');
+        $now = now()->format('H:i:s');
+        $nowm = now()->addMinute()->format('H:i:s');
+        $day = Carbon::parse(now());
+
+        $firstJob = WppSchedule::where('time', '>=', $now)
+            ->where('time', '<', $nowm)
+            ->where('repeat', '>=',  1)
+            ->where('date', '<=',  $day)
+            ->get();
+
+                dd($firstJob);
     });
 });
