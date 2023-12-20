@@ -62,7 +62,7 @@ Route::middleware([
     Route::get('status/{id}', [WppConnectController::class, 'StatusSession'])->name('status');
     Route::post('send_message', [WppConnectController::class, 'SendMessage'])->name('send_message');
 
-    Route::get('/dashboard', [FileController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [WppConnectController::class, 'index'])->name('dashboard');
     Route::delete('/files', [FileController::class, 'delete'])->name('files.delete');
     Route::post('/files/download', [FileController::class, 'download'])->name('files.download');
     Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
