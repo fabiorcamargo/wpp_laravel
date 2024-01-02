@@ -2,8 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\WppConnect;
-use App\Models\WppMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,24 +10,23 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 
-class WppInstanceMessageSend implements ShouldQueue
+class WppSendMessageBatch implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
-
-    protected $message;
-    protected $batch;
+    protected $send;
+    protected $wpp;
+    protected $msg;
+    protected $wppBatch;
 
 
-        public function __construct($mensagem)
+    public function __construct($send, $wpp, $msg, $wppBatch)
     {
-        $this->message = $mensagem;
-        $mensagem->batch !== null ? $this->batch = $mensagem->batch : "";
+        $this->send = $send;
+        $this->wpp = $wpp;
+        $this->msg = $msg;
+        $this->$wppBatch = $wppBatch;
     }
 
     /**
@@ -38,46 +35,34 @@ class WppInstanceMessageSend implements ShouldQueue
     public function handle(): void
     {
 
-        $wpp = $this->message->wpp;
-
-        
         $body = [
-            "phone"=> $this->message->phone,
-            "message"=> $this->message->body,
-            "isGroup"=> $this->message->group == 1 ? true : false
+            "phone" => $this->send[1],
+            "message" => $this->msg,
+            "isGroup" => false
         ];
 
-        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/send-message';
+        $url = 'https://api.meusestudosead.com.br/api/' . $this->wpp->session .  '/send-message';
 
         try {
-            
+
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $wpp->token,
+                'Authorization' => 'Bearer ' . $this->wpp->token,
             ])->post($url, $body);
 
 
-           
+
 
             // Verifique o status da resposta
             if ($response->getStatusCode() === 201) {
 
-            $data = $response->json()['response'][0];
-
-            $data['wppid'] = $data['id'];
-            $data['phone'] = $this->message->phone;
-            $data['status'] = "ENVIADO";
+                $data = $response->json()['response'][0];
 
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
 
-            $this->message->update($data);
-
-            if($this->batch !== null){
-                $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
-                $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
-                $this->batch->save();
-            }
-                
+                $n = $this->wppBatch->status / 100 * count(json_decode($this->wppBatch->body, true)) + 1;
+                $this->wppBatch->status = $n / count(json_decode($this->wppBatch->body, true)) * 100;
+                $this->wppBatch->save();
             } else {
                 // Lidar com erros de resposta HTTP
                 echo 'Erro na solicitação: ' . $response->getStatusCode();
@@ -94,13 +79,13 @@ class WppInstanceMessageSend implements ShouldQueue
 
                 $data['status'] = "ERRO";
 
-                $this->message->update($data);
+                //$this->message->update($data);
             } else {
                 // Lidar com outros tipos de erros (por exemplo, problemas de rede)
                 echo "Erro na solicitação: " . $e->getMessage();
 
                 $data['status'] = "ERRO";
-                $this->message->update($data);
+                //$this->message->update($data);
             }
         }
     }

@@ -34,5 +34,10 @@ class WppConnect extends Model
         return $this->hasMany(WppSchedule::class);
     }
 
+    public function Batch(): HasMany
+    {
+        return $this->hasMany(WppBatch::class);
+    }
+
 }
 

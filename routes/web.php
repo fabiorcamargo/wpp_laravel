@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\LoteController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\WppConnectController;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\S3Upload;
 use App\Mail\TestMail;
+use App\Models\WppBatch;
 use App\Models\WppConnect;
 use App\Models\WppSchedule;
 use Carbon\Carbon;
@@ -34,9 +36,8 @@ Route::get('/', function () {
 });
 
 Route::get('/registro', function () {
-    
-        return view('auth.register');
-    
+
+    return view('auth.register');
 })->name('registro');
 //Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
 //Route::post('file-upload/upload-large-files', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
@@ -51,7 +52,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-   /* Route::get('/dashboard', function () {
+    /* Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');*/
 
@@ -62,12 +63,34 @@ Route::middleware([
     Route::get('status/{id}', [WppConnectController::class, 'StatusSession'])->name('status');
     Route::post('send_message', [WppConnectController::class, 'SendMessage'])->name('send_message');
 
+    Route::get('lote/{wpp}/show', [LoteController::class, 'show'])->name('lote_show');
+
+    Route::get('lote/{wpp}/test', function () {
+
+
+        $wppBatch = WppBatch::first();
+
+        //dd($wppBatch);
+
+        $body = json_decode($wppBatch->body);
+        $wpp = $wppBatch->wpp()->first();
+        $msg = $wppBatch->msg;
+
+        $n = $wppBatch->status / 100 * count(json_decode($wppBatch->body, true)) +1 ;
+        $wppBatch->status = $n / count(json_decode($wppBatch->body, true)) * 100;
+        $wppBatch->save();
+
+        foreach ($body as $send) {
+        }
+    });
+
+
     Route::get('/dashboard', [WppConnectController::class, 'index'])->name('dashboard');
     Route::delete('/files', [FileController::class, 'delete'])->name('files.delete');
     Route::post('/files/download', [FileController::class, 'download'])->name('files.download');
     Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
     Route::post('upload', [UploadController::class, 'store'])->name('upload.store');
-    Route::get('test_email', function(){
+    Route::get('test_email', function () {
         $now = now()->format('H:i:s');
         $now = now()->format('H:i:s');
         $nowm = now()->addMinute()->format('H:i:s');
@@ -79,6 +102,6 @@ Route::middleware([
             ->where('date', '<=',  $day)
             ->get();
 
-                dd($firstJob);
+        dd($firstJob);
     });
 });

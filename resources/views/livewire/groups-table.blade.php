@@ -119,12 +119,28 @@
                                                             <x-heroicon-o-clock class="w-8 text-primary " />
                                                         </button>
                                                     </div>
+
+
+
+                                                    @if($showList == $key)
+
+                                                    <div class="tooltip tooltip-left" data-tip="Fechar">
+                                                        <button class="btn join-item btn-square btn-ghost btn-sm"
+                                                            wire:click="closeModalList()">
+                                                            <x-heroicon-m-minus class="w-8 text-primary   " />
+                                                        </button>
+                                                    </div>
+
+                                                    @else
+
                                                     <div class="tooltip tooltip-left" data-tip="Ver Agendamentos">
                                                         <button class="btn join-item btn-square btn-ghost btn-sm"
                                                             wire:click="open_modal_list({{$key}}, {{$grupo}})">
                                                             <x-heroicon-m-plus class="w-8 text-primary   " />
                                                         </button>
                                                     </div>
+
+                                                    @endif
 
                                                 </div>
                                             </td>
@@ -231,8 +247,8 @@
                                                                 <option selected>Selecione</option>
                                                                 <option value=1>Diário</option>
                                                                 <option value=2>Semanal</option>
-                                                                <option>Semanas Alternadas</option>
-                                                                <option>Mensal</option>
+                                                                <option value=3>Semanas Alternadas</option>
+                                                                <option value=4>Mensal</option>
                                                             </select>
                                                             @error('period') <span class="text-error">{{ $message
                                                                 }}</span>
@@ -294,12 +310,8 @@
                                                     <td class="px-4 py-1 text-sm font-normal whitespace-nowrap">Ativo
                                                         </th>
                                                     <td>
-                                                        <div class="tooltip tooltip-left"
-                                                            data-tip="Fechar Agendamentos">
-                                                            <button class="btn join-item btn-square btn-ghost btn-sm"
-                                                                wire:click="closeModalList()">
-                                                                <x-heroicon-o-minus-small class="w-8 text-primary  " />
-                                                            </button>
+                                                        <div class="tooltip tooltip-left">
+
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -402,7 +414,7 @@
                                                         <option value="Sim" {{$sc->active == "Sim" ? "selected" :
                                                             ""}}>Sim
                                                         </option>
-                                                        <option value="Não" {{$sc->period == "Não" ? "selected" :
+                                                        <option value="Não" {{$sc->active == "Não" ? "selected" :
                                                             ""}}>Não
                                                         </option>
                                                     </select>
@@ -446,10 +458,65 @@
                                                 </div>
 
                                                 <div class="tooltip tooltip-left" data-tip="Excluir">
-                                                    <button class="btn join-item btn-square btn-ghost btn-sm">
+                                                    <button class="btn join-item btn-square btn-ghost btn-sm"
+                                                        wire:click="delete_modal({{$sc}})">
+
                                                         <x-heroicon-m-trash class="w-6 text-error" />
                                                     </button>
+
                                                 </div>
+
+
+                                                @if($showDeleteModal == $sc->id)
+                                                <dialog id="my_modal_1" class="modal modal-open">
+                                                    <div class="modal-box">
+                                                        <h3 class="font-bold text-lg">Você deseja realmente excluir?
+                                                        </h3>
+                                                    
+
+                                                            <div class="pt-8">
+                                                                <div class="flex-1 min-w-0">
+                                                                    <span class="block text-base font-semibold text-gray-900 truncate dark:text-white">
+                                                                        {{$sc->name}} | Agendamento ID: {{$sc->id}}
+                                                                    </span>
+                                                                    <p
+                                                                        class="block text-sm font-normal truncate text-primary-700">
+                                                                        Início {{date('d/m/Y', strtotime($sc->date))}} às {{$sc->time}}hs
+                                                                </p>
+                                                                <p
+                                                                        class="block text-sm font-normal truncate text-primary-700">
+                                                                        Recorrência restante:  {{$sc->repeat}}
+                                                                </p>
+                                                                </div>
+                                                               
+                                                                @if($sc->active == 'Sim')
+                                                                    <div class="flex items-center pt-4">
+                                                                        <div class="badge badge-success badge-xs mr-2"></div> Ativo
+                                                                    </div>
+                                                                    @else
+                                                                    <div class="flex items-center pt-4">
+                                                                        <div class="badge badge-error badge-xs mr-2"></div> Desativado
+                                                                    </div>
+                                                                @endif
+                                                                <div class="chat chat-start pt-4">
+                                                                    <div class="chat-bubble whitespace-normal break-words overflow-wrap-break-word">{!! nl2br(e($sc->body)) !!}</div>
+                                                                  </div>
+                                                        
+
+                                                            </div>
+
+
+                                                     
+                                                        <div class="modal-action">
+                                                                <!-- if there is a button in form, it will close the modal -->
+                                                                <button class="btn btn-error"
+                                                                    wire:click='call_delete({{$sc}})'>Sim</button>
+                                                                    <button class="btn btn-ghost"
+                                                                    wire:click='close_delete_modal'>Não</button>
+                                                        </div>
+                                                </dialog>
+                                                @endif
+
                                                 @endif
                                             </div>
 

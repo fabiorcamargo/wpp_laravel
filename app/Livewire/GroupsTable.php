@@ -21,6 +21,7 @@ class GroupsTable extends Component
     public $isVisible = true;
     public $showModal = '';
     public $showList = '';
+    public $showDeleteModal = '';
     public $key = false;
 
     public $data = [];
@@ -62,15 +63,13 @@ class GroupsTable extends Component
     protected $listeners = ['close_modal' => 'closeModal'];
 
 
-    
+
     public function open_modal($key, $grupo)
     {
 
         $this->name = $grupo['name'];
         $this->group_id = $grupo['group_id'];
         $this->showModal = $key;
-
-
     }
 
     public function open_modal_list($key, WppGroup $grupo)
@@ -80,17 +79,37 @@ class GroupsTable extends Component
         $this->group_id = $grupo['group_id'];
         $this->showList = $key;
         $this->sch =  WppSchedule::where('wpp_group_id', $grupo->id)->get();
-
     }
 
-    public function list_show($key){
+    public function delete_modal(WppSchedule $sc)
+    {
+        $this->showDeleteModal = $sc->id;
+    }
+    public function call_delete(WppSchedule $sc, Request $request)
+    {
+        $sc->delete();
+
+        $request->session()->flash('flash.banner', 'Agendamento excluído com sucesso!');
+        $request->session()->flash('flash.bannerStyle', 'danger');
+
+        return redirect()->route('wpp.show', ['wpp' => $this->wpp->id]);
+    }
+    public function close_delete_modal()
+    {
+        $this->showDeleteModal = '';
+    }
+
+
+    public function list_show($key)
+    {
 
         $this->listShow = $key;
     }
-    
 
-    public function update($itemId, Request $request){
-        
+
+    public function update($itemId, Request $request)
+    {
+
         $this->sch[$itemId]->date = $this->date == "" ? $this->sch[$itemId]->date : $this->date;
         $this->sch[$itemId]->time = $this->time == "" ? $this->sch[$itemId]->time : $this->time;
         $this->sch[$itemId]->repeat = $this->repeat == "" ? $this->sch[$itemId]->repeat : $this->repeat;
@@ -123,7 +142,6 @@ class GroupsTable extends Component
     {
 
         $this->showList = '';
-
     }
 
     public function up_groups()
@@ -137,7 +155,7 @@ class GroupsTable extends Component
         $this->search = "";
     }
 
-    public function submit()
+    public function submit(Request $request)
     {
 
         $this->wpp_group_id = WppGroup::where('group_id', $this->group_id)->first()->id;
@@ -146,13 +164,17 @@ class GroupsTable extends Component
 
         $this->agendar();
 
-        session()->flash('message', 'Agendamento criado com sucesso!');
+        $request->session()->flash('flash.banner', 'Agendamento criado com sucesso!');
+        $request->session()->flash('flash.bannerStyle', 'success');
+
+        return redirect()->route('wpp.show', ['wpp' => $this->wpp->id]);
+
     }
 
     public function agendar()
     {
         $this->time = $this->time . ":00";
-        
+
         $this->wpp->Schedule()->create([
             'wpp_group_id' => WppGroup::where('group_id', $this->group_id)->first()->id,
             'name' => $this->name,
