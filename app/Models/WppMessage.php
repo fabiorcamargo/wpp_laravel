@@ -20,7 +20,9 @@ class WppMessage extends Model
         'body',
         'group',
         't',
-        'status'
+        'status',
+        'created_at',
+        'updated_at'
     ];
 
     public function wpp(): BelongsTo

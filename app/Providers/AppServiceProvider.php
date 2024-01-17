@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Models\WppBatch;
 use App\Models\WppConnect;
+use App\Models\WppMessage;
 use App\Observers\WppBatchObserver;
+use App\Observers\WppMessageObserver;
 use App\Observers\WppObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
     {
         WppConnect::observe(WppObserver::class);
         WppBatch::observe(WppBatchObserver::class);
+        WppMessage::observe(WppMessageObserver::class);
     }
 }

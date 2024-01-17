@@ -78,7 +78,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800">
-                                    <div>
+                                    <div wire:poll.15s>
 
                                         @foreach($grupos as $key => $grupo)
                                         <tr>
@@ -164,7 +164,7 @@
 
                                                     <form>
                                                         @if ($isVisible && session()->has('message'))
-                                                        <div wire:poll.5s>
+                                                        <div>
                                                             <div
                                                                 class="alert alert-success alert-dismissible fade show">
                                                                 {{ session('message') }}

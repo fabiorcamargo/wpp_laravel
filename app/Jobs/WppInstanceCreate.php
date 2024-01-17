@@ -4,13 +4,15 @@ namespace App\Jobs;
 
 use App\Models\WppConnect;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class WppInstanceCreate implements ShouldQueue
 {
@@ -18,14 +20,33 @@ class WppInstanceCreate implements ShouldQueue
 
     protected $url;
     protected $wpp;
+    protected $body;
 
     /**
      * Create a new job instance.
      */
     public function __construct(WppConnect $wpp)
     {
-        $this->url = 'https://api.meusestudosead.com.br/api/' . $wpp->session . '/' . env('WPP_KEY') . '/generate-token';
+        $this->url = env('URL_API') . '/instance/create';
         $this->wpp = $wpp;
+
+        $this->body = [
+            "instanceName" => $this->wpp->session,
+            "token"=> Str::random(60),
+            "qrcode"=> false,
+            "number"=> $this->wpp->phone,
+            "webhook"=> "https://prof-test-hook.requestcatcher.com/" . $this->wpp->session,
+            "webhook_by_events"=> false,
+            "events"=> [
+              "QRCODE_UPDATED",
+              "MESSAGES_UPSERT",
+              "MESSAGES_UPDATE",
+              "MESSAGES_DELETE",
+              "SEND_MESSAGE",
+              "CONNECTION_UPDATE",
+              "CALL"
+            ]
+            ];
     }
 
     /**
@@ -33,33 +54,31 @@ class WppInstanceCreate implements ShouldQueue
      */
     public function handle(): void
     {
-        
+
         try {
-            $client = new Client();
-        
-            $response = $client->request('POST', $this->url, [
-                'headers' => [
-                    'Authorization' => 'Bearer ',
-                ],
-            ]);
-        
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                    'apikey' => env('WPP_KEY')
+            ])->post($this->url, $this->body);
+
             // Obtenha o corpo da resposta como uma string
             $responseBody = $response->getBody()->getContents();
-        
+
             // Você pode fazer o que quiser com $responseBody, como convertê-lo em um array JSON
             $data = json_decode($responseBody, true);
 
-            
-        
+
+
             // Verifique o status da resposta
             if ($response->getStatusCode() === 201) {
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
                 $this->wpp->update([
-                    'token' => $data['token'],
-                    'status' => 'CRIADO'
+                    'token' => $data['hash']['apikey'],
+                    'status' => $data['instance']['status']
                 ]);
-                
+
                 //dispatch(new WppInstanceStartSession($this->wpp));
 
             } else {
