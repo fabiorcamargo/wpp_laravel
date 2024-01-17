@@ -86,7 +86,7 @@ class WebhookController extends Controller
 
     public function register(Request $request){
 
-        dd($request->all());
+        //dd($request->all());
 
         $data = json_decode(json_encode($request->all()));
 
