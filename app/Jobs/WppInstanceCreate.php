@@ -35,7 +35,7 @@ class WppInstanceCreate implements ShouldQueue
             "token"=> Str::random(60),
             "qrcode"=> false,
             "number"=> $this->wpp->phone,
-            "webhook"=> "https://prof-test-hook.requestcatcher.com/" . $this->wpp->session,
+            "webhook"=> env('APP_URL') . '/' . $this->wpp->session,
             "webhook_by_events"=> false,
             "events"=> [
               "QRCODE_UPDATED",
