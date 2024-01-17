@@ -18,6 +18,8 @@ class WebhookController extends Controller
      **/
 
 
+     private $entry;
+     private $status;
 
 
     public function handleWebhook(Request $request)
@@ -88,28 +90,32 @@ class WebhookController extends Controller
 
         //dd($request->all());
 
-        $data = json_decode(json_encode($request->all()));
+        $this->entry = json_decode(json_encode($request->all()));
+
+        //dd($this->entry->data->status);
 
         $return = new WppMessageReturn;
-        $return->create(['body' => json_encode($data)]);
+        $return->create(['body' => json_encode($this->entry)]);
 
-         if(isset($data->entry[0]->changes[0]->value->statuses[0])){
-             $status = $data->entry[0]->changes[0]->value->statuses[0];
-             $this->status($status);
+        
+
+         if(isset($this->entry->data->status)){
+             $this->status = $this->entry->data->status;
+             $this->status();
         }
      
-
+        return response('recebido', 201);
 
     }
    
 
-    public function status($data){
+    public function status(){
 
 
-        if(WppMessage::where('wppid', $data->id)->first()){
-            $msg = WppMessage::where('wppid', $data->id)->first();
+        if(WppMessage::where('wppid', $this->entry->data->id)->first()){
+            $msg = WppMessage::where('wppid', $this->entry->data->id)->first();
 
-            $status = $data->status;
+            $status = $this->status;
     
             $msg->status = $status;
             

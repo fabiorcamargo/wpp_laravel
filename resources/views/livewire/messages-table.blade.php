@@ -29,11 +29,11 @@
                         @elseif($mensagem->type == "list")
                         <td>Lista</td>
                         @endif
-                        @if ($mensagem->status == 'ENVIADO')
+                        {{-- @if ($mensagem->status == 'ENVIADO') --}}
                         <td class="badge badge-success badge-sm gap-2">{{ $mensagem->status }}</td>
-                        @elseif ($mensagem->status == 'ERRO')
-                        <td class="badge badge-error badge-sm gap-2">{{ $mensagem->status }}</td>
-                        @endif
+                        {{-- @elseif ($mensagem->status == 'ERRO') --}}
+                        {{-- <td class="badge badge-error badge-sm gap-2">{{ $mensagem->status }}</td> --}}
+                        {{-- @endif --}}
                     </tr>
                     @endforeach
                     </div>
