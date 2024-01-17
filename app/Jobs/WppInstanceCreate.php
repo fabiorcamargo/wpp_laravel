@@ -33,7 +33,7 @@ class WppInstanceCreate implements ShouldQueue
         $this->body = [
             "instanceName" => $this->wpp->session,
             "token"=> Str::random(60),
-            "qrcode"=> false,
+            "qrcode"=> true,
             "number"=> $this->wpp->phone,
             "webhook"=> env('APP_URL') . '/api/webhook/' . $this->wpp->session,
             "webhook_by_events"=> false,
