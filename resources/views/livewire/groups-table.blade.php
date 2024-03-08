@@ -472,7 +472,7 @@
                                                     <div class="modal-box">
                                                         <h3 class="font-bold text-lg">Você deseja realmente excluir?
                                                         </h3>
-                                                    
+
 
                                                             <div class="pt-8">
                                                                 <div class="flex-1 min-w-0">
@@ -488,7 +488,7 @@
                                                                         Recorrência restante:  {{$sc->repeat}}
                                                                 </p>
                                                                 </div>
-                                                               
+
                                                                 @if($sc->active == 'Sim')
                                                                     <div class="flex items-center pt-4">
                                                                         <div class="badge badge-success badge-xs mr-2"></div> Ativo
@@ -501,12 +501,12 @@
                                                                 <div class="chat chat-start pt-4">
                                                                     <div class="chat-bubble whitespace-normal break-words overflow-wrap-break-word">{!! nl2br(e($sc->body)) !!}</div>
                                                                   </div>
-                                                        
+
 
                                                             </div>
 
 
-                                                     
+                                                        
                                                         <div class="modal-action">
                                                                 <!-- if there is a button in form, it will close the modal -->
                                                                 <button class="btn btn-error"
