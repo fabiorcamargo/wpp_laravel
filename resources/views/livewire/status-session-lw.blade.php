@@ -16,19 +16,32 @@
                     <div class="badge badge-success badge-xs mr-2"></div> Ativo
                 </div>
 
-                <div class="card-actions justify-end">
-                    <button wire:click="StopInstance" wire:loading.remove class="btn btn-error">Parar</button>
-                    <button class="btn btn-error" wire:loading wire:target="StopInstance">
-                        <span class="loading loading-spinner"></span>
-                        Iniciando
+                <div class="flex flex-col w-full lg:flex-row">
+
+                    <div class="tooltip" data-tip="Parar Instância">
+                    <button wire:click="StopInstance" wire:loading.remove class="btn btn-error mr-2" >
+                        <x-heroicon-o-stop class="w-5"/>
                     </button>
-                    <button onclick="my_modal_send.showModal()" class="btn btn-success">
-                        <x-feathericon-message-square class="" />
-                        <h2 class=" ">Mensagem</h2>
+                    </div>
+                        <button class="btn btn-error mr-2" wire:loading wire:target="StopInstance">
+                            <span class="loading loading-spinner"></span>
+                            Iniciando
+                        </button>
+                    <div class="divider"></div>
+                    <div class="tooltip" data-tip="Enviar Mensagem">
+                    <button onclick="my_modal_send.showModal()" class="btn btn-success mr-2">
+                        <x-heroicon-o-chat-bubble-bottom-center-text class="w-5" />
                     </button>
+                    </div>
+                    <div class="tooltip" data-tip="Envio em Lote">
+                    <a href="/lote/{{$wpp->id}}/show" class="btn btn-success">
+                        <x-heroicon-m-bars-arrow-up class="w-5" />
+                    </a>
+                    </div>
+                  </div>
 
 
-                </div>
+
             @endif
             @if($status !== 'QRCODE' && $status !== 'open')
                 <div class="flex items-center">
