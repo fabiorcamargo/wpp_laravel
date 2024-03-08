@@ -82,15 +82,15 @@
                                 
 
                                 <td>
-                                    @if($data->status == 'CRIADO')
+                                    {{-- @if($data->status == 'CRIADO') --}}
                                     <div class="badge badge-warning badge-outline">{{$data->status}}</div>
-                                    @elseif($data->status == 'QRCODE')
-                                    <div class="badge badge-success badge-outline">{{$data->status}}</div>
-                                    @elseif($data->status == 'CRIANDO')
-                                    <div class="badge badge-success badge-outline">{{$data->status}}</div>
-                                    @elseif($data->status == 'CONNECTED')
-                                    <div class="badge badge-success badge-outline">{{$data->status}}</div>
-                                    @endif
+                                    {{-- @elseif($data->status == 'QRCODE') --}}
+                                    {{-- <div class="badge badge-success badge-outline">{{$data->status}}</div> --}}
+                                    {{-- @elseif($data->status == 'CRIANDO') --}}
+                                    {{-- <div class="badge badge-success badge-outline">{{$data->status}}</div> --}}
+                                    {{-- @elseif($data->status == 'CONNECTED') --}}
+                                    {{-- <div class="badge badge-success badge-outline">{{$data->status}}</div> --}}
+                                    {{-- @endif --}}
                                 </td>
                                 <th>
                                     <div class="join">

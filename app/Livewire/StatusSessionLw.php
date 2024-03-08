@@ -9,6 +9,7 @@ use Livewire\Component;
 class StatusSessionLw extends Component
 {
     public $status = 'Criar Sessão';
+    public $qr;
     public $id = '';
     public $wpp;
 
@@ -18,14 +19,17 @@ class StatusSessionLw extends Component
         // Substitua isso com a lógica real para enviar a requisição
         //$this->status = "Enviando requisição com ID: " . $this->id;
         $wpp = new WppConnectController;
-        $this->status = $wpp->StartSession($this->id);
-        sleep(15);
+        $this->qr = $wpp->StartSession($this->id);
+        //dd($this->qr);
 
     }
 
     public function render() {
         $wpp = new WppConnectController;
         $this->status = $wpp->StatusSession($this->id);
+        if($this->status == "connecting"){
+            $this->sendRequest();
+        }
         $this->wpp = WppConnect::find($this->id);
         return view('livewire.status-session-lw', );
     }
@@ -33,6 +37,9 @@ class StatusSessionLw extends Component
     public function status() {
         $wpp = new WppConnectController;
         $this->status = $wpp->StatusSession($this->id);
+
+        
+        
     }
 
     public function StopInstance() {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\WppConnectController;
 use App\Models\WppConnect;
 use Illuminate\Http\Request;
@@ -28,4 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/wpp/send_list/', [WppConnectController::class, 'SendListApi']);
 
+    
+
 });
+
+Route::post('webhook/{session}/{event}', [WebhookController::class, 'register'])->name('webwook.register');

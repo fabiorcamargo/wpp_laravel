@@ -40,37 +40,46 @@ class WppInstanceMessageSend implements ShouldQueue
 
         $wpp = $this->message->wpp;
 
+        $url = env('URL_API') . '/message/sendText/' . $wpp->session;
         
         $body = [
-            "phone"=> $this->message->phone,
-            "message"=> $this->message->body,
-            "isGroup"=> $this->message->group == 1 ? true : false
+            "number"=> $this->message->phone,
+            "options" => [
+                "delay"=> 1200,
+                "presence"=> "composing",
+                "linkPreview"=> false
+            ],
+            "textMessage" => [
+                "text" => $this->message->body
+            ]
         ];
-
-        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/send-message';
 
         try {
             
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $wpp->token,
+                'Content-Type' => 'application/json',
+                    'apikey' => env('WPP_KEY')
             ])->post($url, $body);
 
+            //dd(json_decode($response, true));
 
-           
 
             // Verifique o status da resposta
             if ($response->getStatusCode() === 201) {
 
-            $data = $response->json()['response'][0];
+            $data = json_decode($response, true);
+            //dd($data);
 
-            $data['wppid'] = $data['id'];
-            $data['phone'] = $this->message->phone;
+            $data['wppid'] = $data['key']['id'];
+            $data['phone'] = $data['key']['remoteJid'];
             $data['status'] = "ENVIADO";
 
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
 
             $this->message->update($data);
+
+            
 
             if($this->batch !== null){
                 $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;

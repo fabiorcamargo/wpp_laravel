@@ -99,13 +99,14 @@ class WppConnectController extends Controller
     {
         $wpp = WppConnect::find($id);
 
-        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/qrcode-session';
+        $url = env('URL_API') . '/instance/connect' . $wpp->session . '?number=55' . $wpp->phone;
         try {
             $client = new Client();
 
             $response = $client->request('GET', $url, [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $wpp->token,
+                    'Content-Type' => 'application/json',
+                    'apikey' => $wpp->token
                 ],
             ]);
 
@@ -114,7 +115,7 @@ class WppConnectController extends Controller
                 $image = $response->getBody(); // Obtém o stream da resposta
 
                 // Salvar o stream em um arquivo temporário
-                Storage::put('qr.png', $image);
+                Storage::put('qr.png', $image['base64']);
 
                 // Caminho para o arquivo salvo
                 $imagePath = Storage::path('qr.png');
@@ -136,31 +137,39 @@ class WppConnectController extends Controller
 
         $wpp = WppConnect::find($id);
 
-        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/start-session';
+        $url = env('URL_API') . '/instance/connect/' . $wpp->session . '?number=' . $wpp->phone;
 
         try {
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $wpp->token,
-            ])->post($url);
+                'Content-Type' => 'application/json',
+                    'apikey' => $wpp->token
+            ])->get($url);
 
-            // Verifique o status da resposta
+            //dd(json_decode($response->body()));
+
             if ($response->getStatusCode() === 200) {
-                // A solicitação foi bem-sucedida
-                // Faça algo com os dados
+                $image = json_decode($response->body()); // Obtém o stream da resposta
 
-                $responseData = $response->json();
-                $status = $responseData['status'];
+                
+                $image = $image->base64;
 
-                $wpp->update([
-                    'status' => $status
-                ]);
+                //dd($image);
 
-                return $status;
+                // Salvar o stream em um arquivo temporário
+                // Storage::put('qr.png', $image['base64']);
+
+                // Caminho para o arquivo salvo
+                // $imagePath = Storage::path('qr.png');
+
+                // Retornar a imagem como resposta
+                return $image;
             } else {
-                // Lidar com erros de resposta HTTP
-                echo 'Erro na solicitação: ' . $response->getStatusCode();
+                // Lidar com erros de resposta, se necessário
+                return response()->json(['error' => 'Erro ao obter o QR code'], $response->getStatusCode());
             }
+
+           
         } catch (RequestException $e) {
             // Captura exceções do Guzzle
             if ($e->hasResponse()) {
@@ -190,12 +199,13 @@ class WppConnectController extends Controller
 
         $wpp = WppConnect::find($id);
 
-        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/status-session';
+        $url = env('URL_API') . '/instance/connectionState/' . $wpp->session;
 
         try {
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $wpp->token,
+                'Content-Type' => 'application/json',
+                    'apikey' => env('WPP_KEY')
             ])->get($url);
 
             // Verifique o status da resposta
@@ -204,7 +214,7 @@ class WppConnectController extends Controller
                 // Faça algo com os dados
 
                 $responseData = $response->json();
-                $status = $responseData['status'];
+                $status = $responseData['instance']['state'];
 
                 $wpp->update([
                     'status' => $status
@@ -242,7 +252,7 @@ class WppConnectController extends Controller
     {
 
         $wpp = WppConnect::where('session', $session)->first();
-        if($group == false){
+        if ($group == false) {
             $phone = strlen($phone) > 11 ? "55" . $phone : $phone;
         }
 
@@ -262,7 +272,7 @@ class WppConnectController extends Controller
     {
 
         $wpp = WppConnect::where('session', $session)->first();
-        if($group == false){
+        if ($group == false) {
             $phone = strlen($phone) > 11 ? "55" . $phone : $phone;
         }
 
@@ -287,7 +297,7 @@ class WppConnectController extends Controller
     {
 
         $wpp = WppConnect::where('session', $session)->first();
-        if($group == false){
+        if ($group == false) {
             $phone = strlen($phone) > 11 ? "55" . $phone : $phone;
         }
 
@@ -355,7 +365,7 @@ class WppConnectController extends Controller
             return 'Não autorizado';
         }
     }
-    
+
 
     public function StopInstance($id)
     {
@@ -415,26 +425,28 @@ class WppConnectController extends Controller
 
         $wpp = WppConnect::find($id);
 
-        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/all-groups';
+        $url = env('URL_API') . '/group/fetchAllGroups/' . $wpp->session . '?getParticipants=false';
 
         try {
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $wpp->token,
+                'Content-Type' => 'application/json',
+                    'apikey' => env('WPP_KEY')
             ])->get($url);
 
+            //dd(json_decode($response));
             // Verifique o status da resposta
             if ($response->getStatusCode() === 200) {
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
 
-                $responseData = $response->json();
-                $status = $responseData['status'];
+                $responseData = json_decode($response);
+                //$status = $responseData['status'];
 
                 //dd( ($responseData['response']));
 
                 $this->up_groups($responseData, $wpp);
-                return $status;
+                //return $status;
             } else {
                 // Lidar com erros de resposta HTTP
                 echo 'Erro na solicitação: ' . $response->getStatusCode();
@@ -468,27 +480,25 @@ class WppConnectController extends Controller
         //dd($data);
         //dd($wpp);
 
-        foreach ($data['response'] as $key => $group) {
+        foreach ($data as $key => $group) {
 
-            
-            if(isset($group['groupMetadata']['creation'])){
-                $create = strlen($group['groupMetadata']['creation']) > 10 ? date("Y-m-d H:i:s", $group['groupMetadata']['creation']/1000) : date("Y-m-d H:i:s",$group['groupMetadata']['creation']);
-            }else{
+
+            if (isset($group->creation)) {
+                $create = strlen($group->creation) > 10 ? date("Y-m-d H:i:s", $group->creation / 1000) : date("Y-m-d H:i:s", $group->creation);
+            } else {
                 $create = '';
             }
 
-            
-                if (strlen($group['contact']['id']['user']) > 11) {
-                    //dd($wpp->Groups()->where('group_id', $group['contact']['id']['user'])->exists());
-                    if(!$wpp->Groups()->where('group_id', $group['contact']['id']['user'])->exists())
+
+            if ($group->id) {
+                //dd($wpp->Groups()->where('group_id', $group['contact']['id']['user'])->exists());
+                if (!$wpp->Groups()->where('group_id', $group->id)->exists())
                     $wpp->Groups()->create([
-                        'group_id' => $group['contact']['id']['user'],
-                        'name' => isset($group['contact']['name']) ? $group['contact']['name'] : 'Sem Nome',
+                        'group_id' => $group->id,
+                        'name' => isset($group->subject) ? $group->subject : 'Sem Nome',
                         'creation' =>  $create
                     ]);
-
-                }
-            
+            }
         }
     }
 }

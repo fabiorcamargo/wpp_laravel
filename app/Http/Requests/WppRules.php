@@ -23,7 +23,7 @@ class WppRules extends FormRequest
     {
         return [
             'name' => 'required|string|max:255', // O nome é obrigatório, deve ser uma string e ter no máximo 255 caracteres.
-            'phone' => 'required|numeric|digits:11', // O telefone é obrigatório, deve ser um número e ter 11 dígitos.
+            'phone' => 'required|numeric|regex:/^\d{12,13}$/' // O telefone é obrigatório, deve ser um número e ter 12 ou 13 dígitos.
         ];
     }
 

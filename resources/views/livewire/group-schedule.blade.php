@@ -13,7 +13,7 @@
 
                                             <form wire:submit='agendar'>
                                                 @if ($isVisible && session()->has('message'))
-                                                <div wire:poll.5s>
+                                                <div >
                                                     <div class="alert alert-success alert-dismissible fade show">
                                                         {{ session('message') }}
                                                     </div>
