@@ -89,10 +89,15 @@ class WppInstanceMessageSend implements ShouldQueue
 
             } else {
                 // Lidar com erros de resposta HTTP
-                
-                $data['status'] = "ERRO";
 
+                $data['status'] = "ERRO";
                 $this->message->update($data);
+
+                if($this->batch !== null){
+                    $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
+                    $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
+                    $this->batch->save();
+                }
             }
         } catch (RequestException $e) {
             // Captura exceções do Guzzle
@@ -107,12 +112,24 @@ class WppInstanceMessageSend implements ShouldQueue
                 $data['status'] = "ERRO";
 
                 $this->message->update($data);
+
+                if($this->batch !== null){
+                    $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
+                    $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
+                    $this->batch->save();
+                }
             } else {
                 // Lidar com outros tipos de erros (por exemplo, problemas de rede)
                 echo "Erro na solicitação: " . $e->getMessage();
 
                 $data['status'] = "ERRO";
                 $this->message->update($data);
+
+                if($this->batch !== null){
+                    $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
+                    $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
+                    $this->batch->save();
+                }
             }
         }
     }
