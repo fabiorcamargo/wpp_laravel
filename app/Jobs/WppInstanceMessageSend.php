@@ -91,16 +91,14 @@ class WppInstanceMessageSend implements ShouldQueue
                 $data = json_decode($response, true);
                 //dd($data);
 
-                $data['wppid'] = $data['key']['id'];
-                $data['phone'] = $data['key']['remoteJid'];
-                $data['status'] = "ENVIADO";
+                $data['status'] = "ERRO";
 
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
 
                 $this->message->update($data);
                 // Lidar com erros de resposta HTTP
-                echo 'Erro na solicitação: ' . $response->getStatusCode();
+
             }
         } catch (RequestException $e) {
             // Captura exceções do Guzzle
