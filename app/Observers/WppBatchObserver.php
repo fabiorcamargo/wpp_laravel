@@ -16,7 +16,7 @@ class WppBatchObserver
         $body = json_decode($wppBatch->body);
         $wpp = $wppBatch->wpp()->first();
         $msg = $wppBatch->msg;
-        $time = 3;
+        $time = 10;
         $wpp = $wppBatch->wpp()->first();
 
         foreach ($body as $send) {
@@ -40,7 +40,7 @@ class WppBatchObserver
 
             dispatch(new WppInstanceMessageSend($mensagem))->delay($time);
 
-            $time = $time + 3;
+            $time = $time + 10;
         }
     }
 
