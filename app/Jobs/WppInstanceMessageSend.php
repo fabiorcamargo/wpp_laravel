@@ -89,7 +89,7 @@ class WppInstanceMessageSend implements ShouldQueue
 
             } else {
                 // Lidar com erros de resposta HTTP
-                echo 'Erro na solicitação: ' . $response->getStatusCode();
+                
                 $data['status'] = "ERRO";
 
                 $this->message->update($data);
