@@ -34,11 +34,13 @@ class CsvConverter extends Component
 
         // Utilize o Laravel Excel para importar os dados do CSV
         $data = Excel::toArray(null, ('storage/' . $path));
-        
+
         // Armazene os dados em uma propriedade para exibição na tabela
         $this->data = $data[0];
 
         session()->flash('message', 'Arquivo CSV carregado com sucesso!');
+
+
     }
 
     public function SaveBatch(Request $request)
@@ -64,6 +66,6 @@ class CsvConverter extends Component
         $request->session()->flash('flash.banner', 'Enviados para fila de disparo!');
         $request->session()->flash('flash.bannerStyle', 'success');
 
-        return redirect(route('lote_show', ['wpp' => $this->wpp]));
+        return redirect(route('wpp.show', ['wpp' => $this->wpp]));
     }
 }
