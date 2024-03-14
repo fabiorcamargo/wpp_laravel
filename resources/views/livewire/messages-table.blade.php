@@ -17,7 +17,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <div wire:poll.15s> 
+                    <div wire:poll.15s>
                     @foreach($mensagens as $mensagem)
                     <tr>
                         <td>{{ $mensagem->updated_at->format('d/m/y H:i:s') }}</td>
@@ -30,10 +30,12 @@
                         <td>Lista</td>
                         @endif
                         {{-- @if ($mensagem->status == 'ENVIADO') --}}
+
+                        @if ($mensagem->status == 'ERRO')
+                        <td class="badge badge-error badge-sm gap-2">{{ $mensagem->status }}</td>
+                        @else
                         <td class="badge badge-success badge-sm gap-2">{{ $mensagem->status }}</td>
-                        {{-- @elseif ($mensagem->status == 'ERRO') --}}
-                        {{-- <td class="badge badge-error badge-sm gap-2">{{ $mensagem->status }}</td> --}}
-                        {{-- @endif --}}
+                        @endif
                     </tr>
                     @endforeach
                     </div>
