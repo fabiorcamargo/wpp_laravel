@@ -57,6 +57,16 @@ class CsvConverter extends Component
 
         Arr::forget($dados, 0);
 
+        foreach ($dados as $key => $value) {
+            if ($value["Telefone"] === null) {
+                unset($dados[$key]);
+            }
+        }
+
+        dd($dados);
+
+
+
         $this->wpp->Batch()->create([
             'msg' => $this->msg,
             'body' => json_encode($dados),
