@@ -26,7 +26,7 @@ class WppInstanceMessageSend implements ShouldQueue
     protected $batch;
 
 
-        public function __construct($mensagem)
+    public function __construct($mensagem)
     {
         $this->message = $mensagem;
         $mensagem->batch !== null ? $this->batch = $mensagem->batch : "";
@@ -43,11 +43,11 @@ class WppInstanceMessageSend implements ShouldQueue
         $url = env('URL_API') . '/message/sendText/' . $wpp->session;
 
         $body = [
-            "number"=> $this->message->phone,
+            "number" => $this->message->phone,
             "options" => [
-                "delay"=> 1200,
-                "presence"=> "composing",
-                "linkPreview"=> false
+                "delay" => 1200,
+                "presence" => "composing",
+                "linkPreview" => false
             ],
             "textMessage" => [
                 "text" => $this->message->body
@@ -58,7 +58,7 @@ class WppInstanceMessageSend implements ShouldQueue
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                    'apikey' => env('WPP_KEY')
+                'apikey' => env('WPP_KEY')
             ])->post($url, $body);
 
             //dd(json_decode($response, true));
@@ -67,37 +67,40 @@ class WppInstanceMessageSend implements ShouldQueue
             // Verifique o status da resposta
             if ($response->getStatusCode() === 201) {
 
-            $data = json_decode($response, true);
-            //dd($data);
+                $data = json_decode($response, true);
+                //dd($data);
 
-            $data['wppid'] = $data['key']['id'];
-            $data['phone'] = $data['key']['remoteJid'];
-            $data['status'] = "ENVIADO";
+                $data['wppid'] = $data['key']['id'];
+                $data['phone'] = $data['key']['remoteJid'];
+                $data['status'] = "ENVIADO";
 
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
 
-            $this->message->update($data);
-
-
-
-            if($this->batch !== null){
-                $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
-                $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
-                $this->batch->save();
-            }
-
-            } else {
-                // Lidar com erros de resposta HTTP
-
-                $data['status'] = "ERRO";
                 $this->message->update($data);
 
-                if($this->batch !== null){
+
+
+                if ($this->batch !== null) {
                     $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
                     $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
                     $this->batch->save();
                 }
+            } else {
+
+                $data = json_decode($response, true);
+                //dd($data);
+
+                $data['wppid'] = $data['key']['id'];
+                $data['phone'] = $data['key']['remoteJid'];
+                $data['status'] = "ENVIADO";
+
+                // A solicitação foi bem-sucedida
+                // Faça algo com os dados
+
+                $this->message->update($data);
+                // Lidar com erros de resposta HTTP
+                echo 'Erro na solicitação: ' . $response->getStatusCode();
             }
         } catch (RequestException $e) {
             // Captura exceções do Guzzle
@@ -112,24 +115,12 @@ class WppInstanceMessageSend implements ShouldQueue
                 $data['status'] = "ERRO";
 
                 $this->message->update($data);
-
-                if($this->batch !== null){
-                    $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
-                    $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
-                    $this->batch->save();
-                }
             } else {
                 // Lidar com outros tipos de erros (por exemplo, problemas de rede)
                 echo "Erro na solicitação: " . $e->getMessage();
 
                 $data['status'] = "ERRO";
                 $this->message->update($data);
-
-                if($this->batch !== null){
-                    $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
-                    $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
-                    $this->batch->save();
-                }
             }
         }
     }
