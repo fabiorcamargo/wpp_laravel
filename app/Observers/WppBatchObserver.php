@@ -14,13 +14,15 @@ class WppBatchObserver
     public function created(WppBatch $wppBatch): void
     {
         $body = json_decode($wppBatch->body);
+
+
         $wpp = $wppBatch->wpp()->first();
         $msg = $wppBatch->msg;
         $time = 5;
         $wpp = $wppBatch->wpp()->first();
 
-        foreach ($body as $send) {
-
+        foreach ($body as $key => $send) {
+            $msg = $wppBatch->msg;
             foreach ((array)$send as $chave => $valor) {
                     $marcador = '{{' . $chave . '}}';
                     $msg = str_replace($marcador, $valor, $msg);
