@@ -41,7 +41,7 @@ class WppInstanceMessageSend implements ShouldQueue
         $wpp = $this->message->wpp;
 
         $url = env('URL_API') . '/message/sendText/' . $wpp->session;
-        
+
         $body = [
             "number"=> $this->message->phone,
             "options" => [
@@ -55,7 +55,7 @@ class WppInstanceMessageSend implements ShouldQueue
         ];
 
         try {
-            
+
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                     'apikey' => env('WPP_KEY')
@@ -79,17 +79,20 @@ class WppInstanceMessageSend implements ShouldQueue
 
             $this->message->update($data);
 
-            
+
 
             if($this->batch !== null){
                 $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
                 $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
                 $this->batch->save();
             }
-                
+
             } else {
                 // Lidar com erros de resposta HTTP
                 echo 'Erro na solicitação: ' . $response->getStatusCode();
+                $data['status'] = "ERRO";
+
+                $this->message->update($data);
             }
         } catch (RequestException $e) {
             // Captura exceções do Guzzle
