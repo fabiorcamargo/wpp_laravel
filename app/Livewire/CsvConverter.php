@@ -16,6 +16,8 @@ class CsvConverter extends Component
     public $data = [];
     public $msg;
     public $wpp;
+    public $var = [];
+    public $body = [];
 
 
     public function render()
@@ -30,27 +32,32 @@ class CsvConverter extends Component
 
         $path = $this->file->storeAs('uploads', 'uploaded_file.' . $this->file->getClientOriginalExtension());
 
-
         // Utilize o Laravel Excel para importar os dados do CSV
         $data = Excel::toArray(null, ('storage/' . $path));
-
-        //dd($data);
+        
         // Armazene os dados em uma propriedade para exibição na tabela
         $this->data = $data[0];
-
-        //dd($this->data);
 
         session()->flash('message', 'Arquivo CSV carregado com sucesso!');
     }
 
     public function SaveBatch(Request $request)
     {
-        // Remove a chave especificada do array
-        Arr::forget($this->data, 0);
+        $dados = [];
+        foreach ($this->data as $linha) {
+            $linha_dados = [];
+            foreach ($linha as $key => $value) {
+                $nome_coluna = $this->data[0][$key];
+                $linha_dados[$nome_coluna] = $value;
+            }
+            $dados[] = $linha_dados;
+        }
+
+        Arr::forget($dados, 0);
 
         $this->wpp->Batch()->create([
             'msg' => $this->msg,
-            'body' => json_encode($this->data),
+            'body' => json_encode($dados),
             'status' => 0
         ]);
 
