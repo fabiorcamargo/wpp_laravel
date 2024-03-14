@@ -88,34 +88,18 @@ class WppInstanceMessageSend implements ShouldQueue
                 }
             } else {
 
-                $data = json_decode($response, true);
-                //dd($data);
-
                 $data['status'] = "ERRO";
-
-                // A solicitação foi bem-sucedida
-                // Faça algo com os dados
-
                 $this->message->update($data);
-                // Lidar com erros de resposta HTTP
 
             }
         } catch (RequestException $e) {
             // Captura exceções do Guzzle
             if ($e->hasResponse()) {
-                // Se houver uma resposta HTTP no erro, você pode acessá-la
-                $response = $e->getResponse();
-                $statusCode = $response->getStatusCode();
-                $errorBody = $response->getBody()->getContents();
-                // Faça o que quiser com a resposta de erro
-                echo "Erro na solicitação: Status $statusCode, Response: $errorBody";
 
                 $data['status'] = "ERRO";
-
                 $this->message->update($data);
+
             } else {
-                // Lidar com outros tipos de erros (por exemplo, problemas de rede)
-                echo "Erro na solicitação: " . $e->getMessage();
 
                 $data['status'] = "ERRO";
                 $this->message->update($data);
