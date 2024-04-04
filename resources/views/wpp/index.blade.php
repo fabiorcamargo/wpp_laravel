@@ -47,9 +47,13 @@
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div>
+                                            @if($data->status == 'open')
                                             <a href="{{route('wpp.show', ['wpp' => $data])}}">
                                             <div class="">{{ $data->session }}</div>
                                             </a>
+                                            @else
+                                            <div class="">{{ $data->session }}</div>
+                                            @endif
                                             {{--<div class="text-sm opacity-50">United States</div>--}}
                                         </div>
                                     </div>
@@ -58,10 +62,7 @@
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div>
-                                            <a href="{{route('wpp.show', ['wpp' => $data])}}">
                                                 <div class="">{{ $data->name }}</div>
-                                            </a>
-
                                             {{--<div class="text-sm opacity-50">United States</div>--}}
                                         </div>
                                     </div>
