@@ -47,7 +47,7 @@
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div>
-                                            @if($data->status == 'open' || $data->status == 'created')
+                                            @if($data->status == 'open' || $data->status == 'created' || $data->status == 'connecting')
                                             <a href="{{route('wpp.show', ['wpp' => $data])}}">
                                             <div class="">{{ $data->session }}</div>
                                             </a>
