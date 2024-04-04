@@ -39,5 +39,10 @@ class WppConnect extends Model
         return $this->hasMany(WppBatch::class);
     }
 
+    public function getImage(): HasMany
+    {
+        return $this->hasMany(WppTemplateImg::class, 'wpp_connect_id', 'id');
+    }
+
 }
 

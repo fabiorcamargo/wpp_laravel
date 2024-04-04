@@ -25,7 +25,7 @@ class MessagesTable extends Component
         $this->atualizarTabela();
         
         return view('livewire.messages-table', [
-            'mensagens' => $this->wpp->Messages()->orderBy('created_at', 'desc')->paginate(10, pageName: 'message')
+            'mensagens' => $this->wpp->Messages()->orderBy('updated_at', 'desc')->paginate(10, pageName: 'message')
         ]);
     }
 }

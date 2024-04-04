@@ -22,7 +22,8 @@ class WppMessage extends Model
         't',
         'status',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'img'
     ];
 
     public function wpp(): BelongsTo

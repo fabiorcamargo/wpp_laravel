@@ -33,59 +33,61 @@ class WppInstanceImgSend implements ShouldQueue
     {
         $wpp = $this->message->wpp;
 
-        
+        $url = env('URL_API') . '/message/sendMedia/' . $wpp->session;
+
         $body = [
-            "phone"=> $this->message->phone,
-            "caption"=> json_decode($this->message->body)->msg,
-            "base64"=> json_decode($this->message->body)->img,
-            "isGroup"=> $this->message->group == 1 ? true : false
+            "number" => $this->message->phone,
+            "options" => [
+                "delay" => 1200,
+                "presence" => "composing",
+            ],
+            "mediaMessage" => [
+                "mediatype" => "image",
+                "caption" => $this->message->body,
+                "media" => $this->message->img
+            ]
         ];
 
-        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/send-image';
-
         try {
-            
+
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $wpp->token,
+                'Content-Type' => 'application/json',
+                'apikey' => env('WPP_KEY')
             ])->post($url, $body);
 
+            //dd(json_decode($response, true));
 
-           
 
             // Verifique o status da resposta
             if ($response->getStatusCode() === 201) {
 
-            $data = $response->json()['response'][0];
+                $data = json_decode($response, true);
+                //dd($data);
 
-            $data['wppid'] = $data['id'];
-            $data['phone'] = $this->message->phone;
-            $data['status'] = "ENVIADO";
+                $data['wppid'] = $data['key']['id'];
+                $data['phone'] = $data['key']['remoteJid'];
+                $data['status'] = "ENVIADO";
 
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
 
-            $this->message->update($data);
-                
+                $this->message->update($data);
+
+
             } else {
-                // Lidar com erros de resposta HTTP
-                echo 'Erro na solicitação: ' . $response->getStatusCode();
+
+                $data['status'] = "ERRO";
+                $this->message->update($data);
+
             }
         } catch (RequestException $e) {
             // Captura exceções do Guzzle
             if ($e->hasResponse()) {
-                // Se houver uma resposta HTTP no erro, você pode acessá-la
-                $response = $e->getResponse();
-                $statusCode = $response->getStatusCode();
-                $errorBody = $response->getBody()->getContents();
-                // Faça o que quiser com a resposta de erro
-                echo "Erro na solicitação: Status $statusCode, Response: $errorBody";
 
                 $data['status'] = "ERRO";
-
                 $this->message->update($data);
+
             } else {
-                // Lidar com outros tipos de erros (por exemplo, problemas de rede)
-                echo "Erro na solicitação: " . $e->getMessage();
 
                 $data['status'] = "ERRO";
                 $this->message->update($data);

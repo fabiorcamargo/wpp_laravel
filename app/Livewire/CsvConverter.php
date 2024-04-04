@@ -16,12 +16,41 @@ class CsvConverter extends Component
     public $data = [];
     public $msg;
     public $wpp;
+
+    public $batchType = 'Texto';
+    public $batchDelay = 5;
+    
+    public $img;
+    public $imgUrl;
+    public $photos;
+
     public $var = [];
     public $body = [];
 
+    public $textInputs = [];
+    public $imageInputs = [];
+
+    public $selectedPhoto = null;
+
+
+    public function changeType() {
+        dd($this->batchType);
+    }
+
+    public function gallery()
+    {
+        $this->photos = $this->wpp->getImage()->get();
+    }
+
+    public function selectPhoto($photo)
+    {
+        $this->selectedPhoto = $photo;
+    }
 
     public function render()
     {
+        $this->gallery();
+
         return view('livewire.csv-converter');
     }
 
@@ -46,11 +75,16 @@ class CsvConverter extends Component
     public function SaveBatch(Request $request)
     {
         $dados = [];
+
+
         foreach ($this->data as $linha) {
             $linha_dados = [];
             foreach ($linha as $key => $value) {
                 $nome_coluna = $this->data[0][$key];
                 $linha_dados[$nome_coluna] = $value;
+                $linha_dados['img'] = $this->selectedPhoto;
+                $linha_dados['type'] = $this->batchType;
+                $linha_dados['delay'] = $this->batchDelay;
             }
             $dados[] = $linha_dados;
         }
@@ -65,8 +99,6 @@ class CsvConverter extends Component
 
         //dd($dados);
 
-
-
         $this->wpp->Batch()->create([
             'msg' => $this->msg,
             'body' => json_encode($dados),
@@ -78,4 +110,23 @@ class CsvConverter extends Component
 
         return redirect(route('wpp.show', ['wpp' => $this->wpp]));
     }
+
+    public function saveImg()
+    {
+
+        $this->validate(['img' => 'required|mimes:jpg,png']);
+
+        $path = $this->img->storeAs('uploads', uuid_create() . '.' . $this->img->getClientOriginalExtension());
+
+        $imageUrl = asset("storage/{$path}");
+
+        $this->wpp->getImage()->create([
+            'url' => $imageUrl
+        ]);
+
+        $this->imgUrl = $imageUrl;
+
+        $this->gallery();
+    }
+
 }

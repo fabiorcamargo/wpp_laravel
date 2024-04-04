@@ -32,12 +32,13 @@ return [
 
         'sync' => [
             'driver' => 'sync',
+            'queue' => 'WpLaravel',
         ],
 
         'database' => [
             'driver' => 'database',
             'table' => 'jobs',
-            'queue' => 'default',
+            'queue' => 'WpLaravel',
             'retry_after' => 90,
             'after_commit' => false,
         ],
