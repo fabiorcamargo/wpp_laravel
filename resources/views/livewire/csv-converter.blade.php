@@ -72,10 +72,10 @@
                     <div class="@error('selectedPhoto')border border-spacing-3 border-error @enderror rounded-lg p-4">
                         <div class="pt-4">
                             <span class="label-text">Imagem da Mensagem</span>
-                            <form wire:submit.prevent="saveImg" class="flex flex-col sm:flex-row items-center pt-4">
+                            <form class="flex flex-col sm:flex-row items-center pt-4">
                                 <input type="file" wire:model="img"
                                     class="file-input file-input-bordered file-input-sm mb-2 sm:mb-0 sm:mr-2" />
-                                <button class="btn btn-primary btn-sm flex-grow w-full mt-4" type="submit">Carregar</button>
+                                <button class="btn btn-primary btn-sm flex-grow w-full mt-4" wire:click="saveImg">Carregar</button>
                             </form>
                         </div>
 
