@@ -36,6 +36,7 @@ class WppObserver
      */
     public function deleted(WppConnect $wppConnect): void
     {
+        
         dispatch(new WppInstanceDelete($wppConnect));
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\WppRules;
 use App\Jobs\WppInstanceCreate;
+use App\Jobs\WppInstanceDelete;
 use App\Jobs\WppInstanceImgSend;
 use App\Jobs\WppInstanceListSend;
 use App\Jobs\WppInstanceMessageSend;

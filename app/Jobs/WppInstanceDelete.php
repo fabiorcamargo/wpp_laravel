@@ -17,13 +17,17 @@ class WppInstanceDelete implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $url;
+
     /**
      * Create a new job instance.
      */
-    public function __construct(WppConnect $wpp)
+    public function __construct(WppConnect $wppConnect)
     {
-        $this->url = 'https://api.meusestudosead.com.br/api/' . $wpp->session . '/' . env('WPP_KEY') . '/logout-session';
-        $this->wpp = $wpp;
+        
+        $this->wpp = $wppConnect;
+        $this->url = env('URL_API') . '/instance/delete/' . $wppConnect->session;
+
     }
 
     /**
@@ -34,8 +38,9 @@ class WppInstanceDelete implements ShouldQueue
        
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->wpp->token,
-            ])->post($this->url);
+                'Content-Type' => 'application/json',
+                    'apikey' => env('WPP_KEY')
+            ])->delete($this->url);
         
             // Obtenha o corpo da resposta como uma string
             $responseBody = $response->getBody()->getContents();
@@ -46,7 +51,7 @@ class WppInstanceDelete implements ShouldQueue
             
         
             // Verifique o status da resposta
-            if ($response->getStatusCode() === 201) {
+            if ($response->getStatusCode() === 200) {
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
                 
