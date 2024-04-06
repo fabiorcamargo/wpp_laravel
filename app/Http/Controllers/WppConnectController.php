@@ -30,7 +30,13 @@ class WppConnectController extends Controller
      */
     public function index()
     {
+
         $datas = auth()->user()->getWpp()->get();
+
+        //dd($datas);
+        foreach ($datas as $data){
+            $this->StatusSession($data->id);
+        }
 
         return view('wpp.index', ['datas' => $datas]);
     }
@@ -373,13 +379,15 @@ class WppConnectController extends Controller
 
         $wpp = WppConnect::find($id);
 
-        $url = 'https://api.meusestudosead.com.br/api/' . $wpp->session .  '/close-session';
+        $url = env('URL_API') . '/instance/logout/' . $wpp->session;
 
+        //dd($url);
         try {
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $wpp->token,
-            ])->post($url);
+                'Content-Type' => 'application/json',
+                    'apikey' => env('WPP_KEY')
+            ])->delete($url);
 
             // Verifique o status da resposta
             if ($response->getStatusCode() === 200) {
@@ -387,12 +395,13 @@ class WppConnectController extends Controller
                 // Faça algo com os dados
 
                 $responseData = $response->json();
-                $status = $responseData['status'];
+                dd($responseData);
+                //$status = $responseData['instance']['state'];
 
-                $wpp->update([
-                    'status' => $status
-                ]);
-                return $status;
+                // $wpp->update([
+                //     'status' => $status
+                // ]);
+                return back();
             } else {
                 // Lidar com erros de resposta HTTP
                 echo 'Erro na solicitação: ' . $response->getStatusCode();

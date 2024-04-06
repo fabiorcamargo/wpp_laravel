@@ -58,7 +58,9 @@ Route::middleware([
 
     Route::resource('wpp', WppConnectController::class);
 
-    Route::get('startsession/{id}', [WppConnectController::class, 'StartSession'])->name('startsession');
+    Route::post('startsession/{id}', [WppConnectController::class, 'StartSession'])->name('startsession');
+    Route::delete('stopistance/{id}', [WppConnectController::class, 'StopInstance'])->name('stopinstance');
+
     Route::get('qrcode/{id}', [WppConnectController::class, 'QrCode'])->name('qrcode');
     Route::get('status/{id}', [WppConnectController::class, 'StatusSession'])->name('status');
     Route::post('send_message', [WppConnectController::class, 'SendMessage'])->name('send_message');

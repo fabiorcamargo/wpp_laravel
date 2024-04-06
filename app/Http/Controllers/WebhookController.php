@@ -102,6 +102,7 @@ class WebhookController extends Controller
          if(isset($this->entry->data->status)){
              $this->status = $this->entry->data->status;
              $this->status();
+             
         }
      
         return response('recebido', 201);

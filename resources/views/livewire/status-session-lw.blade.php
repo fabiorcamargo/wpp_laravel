@@ -12,21 +12,21 @@
             </p>
             </div>
             @if($status == 'open')
-                <div class="flex items-center">
+                <div class="flex items-center" wire:poll.10s>
                     <div class="badge badge-success badge-xs mr-2"></div> Ativo
                 </div>
 
                 <div class="flex flex-col w-full lg:flex-row">
 
-                    <div class="tooltip" data-tip="Parar Instância">
+                    {{-- <div class="tooltip" data-tip="Parar Instância">
                     <button wire:click="StopInstance" wire:loading.remove class="btn btn-error mr-2" >
                         <x-heroicon-o-stop class="w-5"/>
                     </button>
-                    </div>
-                        <button class="btn btn-error mr-2" wire:loading wire:target="StopInstance">
+                    </div> --}}
+                        {{-- <button class="btn btn-error mr-2" wire:loading wire:target="StopInstance">
                             <span class="loading loading-spinner"></span>
                             Iniciando
-                        </button>
+                        </button> --}}
                     <div class="divider"></div>
                     <div class="tooltip" data-tip="Enviar Mensagem">
                     <button onclick="my_modal_send.showModal()" class="btn btn-success mr-2">
@@ -44,11 +44,11 @@
 
             @endif
             @if($status !== 'QRCODE' && $status !== 'open')
-                <div class="flex items-center">
+                <div class="flex items-center" wire:poll.10s>
                     <div class="badge badge-error badge-xs mr-2"></div> {{$wpp->status}}
                 </div>
                 <div class="card-actions justify-end">
-                    <button wire:click="sendRequest" wire:loading.remove class="btn btn-primary">Iniciar</button>
+                    {{-- <button wire:click="sendRequest" wire:loading.remove class="btn btn-primary">Iniciar</button> --}}
 
                     <button class="btn btn-primary" wire:loading wire:target="sendRequest">
                         <span class="loading loading-spinner"></span>
@@ -114,7 +114,7 @@
 
         <!-- Qr Code Modal -->
         <input type="checkbox" id="my_modal_qr" class="modal-toggle" />
-        <div class="modal modal-open">
+        <div class="modal modal-open" wire:poll.10s>
             <div class="modal-box">
                 <h3 class="text-lg font-bold">Capture o QrCode para iniciar a Instância:</h3>
                 <div class="form-control w-full max-w-full pt-8">

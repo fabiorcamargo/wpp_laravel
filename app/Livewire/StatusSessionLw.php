@@ -26,20 +26,23 @@ class StatusSessionLw extends Component
 
     public function render() {
         $wpp = new WppConnectController;
-        $this->status = $wpp->StatusSession($this->id);
-        if($this->status == "connecting"){
-            $this->sendRequest();
-        }
+        //$this->status = $wpp->StatusSession($this->id);
+        // if($this->status == "connecting"){
+        //     $this->sendRequest();
+        // }
+
         $this->wpp = WppConnect::find($this->id);
+
+        $this->status = $this->wpp->status;
+
+        //dd($this->status);
+
         return view('livewire.status-session-lw', );
     }
 
     public function status() {
         $wpp = new WppConnectController;
-        $this->status = $wpp->StatusSession($this->id);
-
-        
-        
+        //$this->status = $wpp->StatusSession($this->id);  
     }
 
     public function StopInstance() {

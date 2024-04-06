@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
                 dispatch(new WppScheduleJob($firstJob, $now, $nowm, $day));
             }
         })->everyMinute()->name('Call-Schedule-Job');
+
     }
 
     /**
