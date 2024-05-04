@@ -110,7 +110,7 @@
 
 
 
-    @if($status == 'created')
+    @if($status == 'created' || $status == 'connecting')
     <!-- Qr Code Modal -->
     <input type="checkbox" id="my_modal_qr" class="modal-toggle" />
     <div class="modal modal-open">
