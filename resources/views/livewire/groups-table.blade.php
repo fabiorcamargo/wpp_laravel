@@ -29,7 +29,7 @@
 
                     <div class="flex items-center mb-4 ">
 
-                        <select wire:model="agendado" class="select select-bordered w-full max-w-xs mr-4 ">
+                        <select wire:model.live="agendado" class="select select-bordered w-full max-w-xs mr-4 ">
                             <option disabled selected>Sem Filtro</option>
                             <option value="true">Agendados</option>
                             <option value="false">Não Agendado</option>
