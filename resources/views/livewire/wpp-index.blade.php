@@ -115,7 +115,7 @@
                                                 class="btn btn-square btn-md btn-success">
                                                 <x-feathericon-play />
                                             </button>
-                                            <div wire:loading>
+                                            <div wire:loading wire:target="StartSession">
                                                 <button class="btn btn-square btn-md btn-disabled">
                                                     <span class="loading loading-spinner"></span>
                                                 </button>
