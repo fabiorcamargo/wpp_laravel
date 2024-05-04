@@ -103,6 +103,15 @@ class WebhookController extends Controller
             }else{
                 return response('Instância não existe ' . $this->entry->instance, 201);
             }
+        } else if ($this->entry->event == "qrcode.updated"){
+            if (WppConnect::where('session', $this->entry->instance)->first()) {
+                $wpp = WppConnect::where('session', $this->entry->instance)->first();
+                $wpp->qrCode = $this->entry->data->qrcode->base64;
+                $wpp->save();
+            }
+
+
+
         } else if (isset($this->entry->data->state)) {
             $this->status = $this->entry->data->state;
             $this->status();
