@@ -481,7 +481,7 @@ class WppConnectController extends Controller
 
             if ($group->id) {
                 //dd($wpp->Groups()->where('group_id', $group['contact']['id']['user'])->exists());
-                if (!$wpp->Groups()->where('group_id', $group->id)->exists())
+                if (!$wpp->Groups()->where('group_id', $group->id)->where('wpp_connect_id', $wpp->id)->exists())
                     $wpp->Groups()->create([
                         'group_id' => $group->id,
                         'name' => isset($group->subject) ? $group->subject : 'Sem Nome',
