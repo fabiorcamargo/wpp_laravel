@@ -20,7 +20,6 @@
             {{--<figure class="pt-8 "><img class=' w-24 ' src="{{asset('Logo Vetorial.svg')}}" alt="logo" /></figure>
             --}}
 
-
             <div class="card-body">
                 <h2 class="card-title">Gerenciamento de Instancia</h2>
                 {{--<p>If a dog chews shoes whose shoes does he choose?</p>--}}
