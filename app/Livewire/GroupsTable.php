@@ -169,7 +169,6 @@ class GroupsTable extends Component
         $request->session()->flash('flash.bannerStyle', 'success');
 
         return redirect()->route('wpp.show', ['wpp' => $this->wpp->id]);
-
     }
 
     public function agendar()
@@ -190,14 +189,11 @@ class GroupsTable extends Component
 
     public function render()
     {
-
-        $query = $this->wpp->Groups()->orderBy('creation', 'desc');
-
-        //dd($query);
+        $query = $this->wpp->Groups()->where('wpp_connect_id', $this->wpp->id)->orderBy('creation', 'desc');
 
         if ($this->search) {
             $query->where(function ($subquery) {
-                $subquery->where('name', 'like', '%' . $this->search . '%')->where('wpp_connect_id', $this->wpp->id)
+                $subquery->where('name', 'like', '%' . $this->search . '%')
                     ->orWhere('group_id', $this->search);
             });
         }
