@@ -13,14 +13,14 @@ class WebhookController extends Controller
 {
 
 
-        /**
+    /**
      * UPDATE YOUR ACCESS TOKEN
      * This will be the Access Token value needed to send messages via WhatsApp
      **/
 
 
-     private $entry;
-     private $status;
+    private $entry;
+    private $status;
 
 
     public function handleWebhook(Request $request)
@@ -87,9 +87,10 @@ class WebhookController extends Controller
     }
 
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
 
-        dd($request->all());
+        //dd($request->all());
 
         $this->entry = json_decode(json_encode($request->all()));
 
@@ -98,39 +99,38 @@ class WebhookController extends Controller
         $return = new WppMessageReturn;
         $return->create(['body' => json_encode($this->entry)]);
 
-        if($this->entry->event == "connection.update"){
-            $wpp = WppConnect::where('session', $this->entry->instance)->first();
-            $wpp->status = $this->entry->data->state;
-
-            //dd($wpp);
-            $wpp->save();
-        }else if(isset($this->entry->data->state)){
+        if ($this->entry->event == "connection.update") {
+            if (WppConnect::where('session', $this->entry->instance)->first()) {
+                $wpp = WppConnect::where('session', $this->entry->instance)->first();
+                $wpp->status = $this->entry->data->state;
+                $wpp->save();
+            }else{
+                return response('Instância não existe ' . $this->entry->instance, 201);
+            }
+        } else if (isset($this->entry->data->state)) {
             $this->status = $this->entry->data->state;
             $this->status();
-            
-       }
-        
+        }
 
-        
-     
+
+
+
         return response('recebido', 201);
-
     }
-   
-
-    public function status(){
 
 
-        if(WppMessage::where('wppid', $this->entry->instance)->first()){
+    public function status()
+    {
+
+
+        if (WppMessage::where('wppid', $this->entry->instance)->first()) {
             $msg = WppMessage::where('wppid', $this->entry->instance)->first();
 
             $status = $this->status;
-    
+
             $msg->status = $status;
-            
+
             $msg->save();
         }
-        
     }
-
 }
