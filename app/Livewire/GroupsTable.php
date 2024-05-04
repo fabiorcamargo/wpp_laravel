@@ -176,7 +176,7 @@ class GroupsTable extends Component
         $this->time = $this->time . ":00";
 
         $this->wpp->Schedule()->create([
-            'wpp_group_id' => WppGroup::where('group_id', $this->group_id)->first()->id,
+            'wpp_group_id' => WppGroup::where('group_id', $this->group_id)->where('wpp_connect_id', $this->wpp->id)->first()->id,
             'name' => $this->name,
             'date' => $this->date,
             'time' => $this->time,
