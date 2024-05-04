@@ -34,9 +34,9 @@ class WppConnectController extends Controller
         $datas = auth()->user()->getWpp()->get();
 
         //dd($datas);
-        foreach ($datas as $data){
-            $this->StatusSession($data->id);
-        }
+        // foreach ($datas as $data){
+        //     $this->StatusSession($data->id);
+        // }
 
         return view('wpp.index', ['datas' => $datas]);
     }
@@ -106,37 +106,16 @@ class WppConnectController extends Controller
     {
         $wpp = WppConnect::find($id);
 
-        $url = env('URL_API') . '/instance/connect' . $wpp->session . '?number=55' . $wpp->phone;
-        try {
-            $client = new Client();
+        // Salvar o stream em um arquivo temporário
+        Storage::put('qr.png', $wpp->qrCode);
 
-            $response = $client->request('GET', $url, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'apikey' => $wpp->token
-                ],
-            ]);
+        // Caminho para o arquivo salvo
+        $imagePath = Storage::path('qr.png');
 
-            // Verifique se a resposta é bem-sucedida (código 200)
-            if ($response->getStatusCode() === 200) {
-                $image = $response->getBody(); // Obtém o stream da resposta
-
-                // Salvar o stream em um arquivo temporário
-                Storage::put('qr.png', $image['base64']);
-
-                // Caminho para o arquivo salvo
-                $imagePath = Storage::path('qr.png');
-
+       dd($imagePath);
                 // Retornar a imagem como resposta
                 return response()->file($imagePath);
-            } else {
-                // Lidar com erros de resposta, se necessário
-                return response()->json(['error' => 'Erro ao obter o QR code'], $response->getStatusCode());
-            }
-        } catch (RequestException $e) {
-            // Lidar com exceções, se ocorrerem
-            return response()->json(['error' => 'Erro na requisição: ' . $e->getMessage()], 500);
-        }
+           
     }
 
     public function StartSession($id)
@@ -395,7 +374,7 @@ class WppConnectController extends Controller
                 // Faça algo com os dados
 
                 $responseData = $response->json();
-                dd($responseData);
+                //dd($responseData);
                 //$status = $responseData['instance']['state'];
 
                 // $wpp->update([

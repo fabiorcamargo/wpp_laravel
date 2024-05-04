@@ -67,7 +67,7 @@
 
 
 
-    {{--<h2>Status: {{ $status }}</h2>
+    {{-- <h2>Status: {{ $status }}</h2>
     @if($status !== 'QRCODE' && $status !== 'CONNECTED')
     <div class="flex justify-center items-center">
         <x-heroicon-m-exclamation-circle class="text-error w-40" />
@@ -80,7 +80,7 @@
             <span class="loading loading-spinner"></span>
             Processando
         </button>
-    </div>
+    </div> --}}
 
 
     @if($status == 'CONNECTED')
@@ -99,36 +99,32 @@
         <h2 class=" ">Mensagem</h2>
     </button>
 
-    {{--<button onclick="my_modal_lote.showModal()" class="btn btn-secondary">
+    <button onclick="my_modal_lote.showModal()" class="btn btn-secondary">
         <x-feathericon-users />
         Criar Grupo
     </button>
 
-    @endif--}}
+    @endif
 
 
 
 
 
-    @if($status == 'connecting')
-
-        <!-- Qr Code Modal -->
-        <input type="checkbox" id="my_modal_qr" class="modal-toggle" />
-        <div class="modal modal-open" wire:poll.10s>
-            <div class="modal-box">
-                <h3 class="text-lg font-bold">Capture o QrCode para iniciar a Instância:</h3>
-                <div class="form-control w-full max-w-full pt-8">
-                    <div>
-                        <div class=" text-center" >
-                            <img src="{{ $qr }}" alt="QR Code">
-                            {{-- <img class="inline-block" src="{{ route('qrcode', ['id' => $id]) }}" alt="QRCode"> --}}
-                        </div>
-                    </div>
+    @if($status == 'created')
+    <!-- Qr Code Modal -->
+    <input type="checkbox" id="my_modal_qr" class="modal-toggle" />
+    <div class="modal modal-open">
+        <div class="modal-box flex flex-col items-center">
+            <h3 class="text-lg font-bold">Capture o QrCode para iniciar a Instância:</h3>
+            <div class="form-control w-full max-w-full pt-8">
+                <div class="text-center">
+                    <img src="{{ $wpp->qrCode }}" alt="QR Code" class="mx-auto">
                 </div>
             </div>
-            <label class="modal-backdrop" for="my_modal_qr">Close</label>
-            <button wire:click="render" class="btn btn-error">Fechar</button>
         </div>
+        <label class="modal-backdrop" for="my_modal_qr">Close</label>
+        <button wire:click="render" class="btn btn-error">Fechar</button>
+    </div>
+@endif
 
-    @endif
 </div>

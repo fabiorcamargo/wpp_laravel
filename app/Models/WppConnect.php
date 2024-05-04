@@ -17,6 +17,7 @@ class WppConnect extends Model
         'session',
         'token',
         'status',
+        'qrCode'
 ];
 
     public function Messages(): HasMany

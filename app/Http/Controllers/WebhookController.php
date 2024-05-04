@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\WppConnect;
 use App\Models\WppMessage;
 use App\Models\WppMessageReturn;
 use Illuminate\Http\Request;
@@ -92,18 +93,25 @@ class WebhookController extends Controller
 
         $this->entry = json_decode(json_encode($request->all()));
 
-        //dd($this->entry->data->status);
+        //dd($this->entry->event);
 
         $return = new WppMessageReturn;
         $return->create(['body' => json_encode($this->entry)]);
 
+        if($this->entry->event == "connection.update"){
+            $wpp = WppConnect::where('session', $this->entry->instance)->first();
+            $wpp->status = $this->entry->data->state;
+
+            //dd($wpp);
+            $wpp->save();
+        }else if(isset($this->entry->data->state)){
+            $this->status = $this->entry->data->state;
+            $this->status();
+            
+       }
         
 
-         if(isset($this->entry->data->status)){
-             $this->status = $this->entry->data->status;
-             $this->status();
-             
-        }
+        
      
         return response('recebido', 201);
 
@@ -113,8 +121,8 @@ class WebhookController extends Controller
     public function status(){
 
 
-        if(WppMessage::where('wppid', $this->entry->data->id)->first()){
-            $msg = WppMessage::where('wppid', $this->entry->data->id)->first();
+        if(WppMessage::where('wppid', $this->entry->instance)->first()){
+            $msg = WppMessage::where('wppid', $this->entry->instance)->first();
 
             $status = $this->status;
     

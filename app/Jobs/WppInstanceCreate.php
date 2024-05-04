@@ -75,7 +75,8 @@ class WppInstanceCreate implements ShouldQueue
                 // Faça algo com os dados
                 $this->wpp->update([
                     'token' => $data['hash']['apikey'],
-                    'status' => $data['instance']['status']
+                    'status' => $data['instance']['status'],
+                    'qrCode' => $data['qrcode']['base64'],
                 ]);
 
                 //dispatch(new WppInstanceStartSession($this->wpp));
