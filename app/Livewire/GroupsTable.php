@@ -201,10 +201,13 @@ class GroupsTable extends Component
             });
         }
 
-        if ($this->agendado) {
+        if ($this->agendado == 1) {
             // Verificar se existe uma relação Schedule
             $query->has('Schedule');
-        }
+        } else if ($this->agendado == 0){
+
+            $query->doesntHave('Schedule'); 
+        } 
 
 
         return view('livewire.groups-table', [

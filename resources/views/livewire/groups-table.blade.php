@@ -31,8 +31,8 @@
 
                         <select wire:model.live="agendado" class="select select-bordered w-full max-w-xs mr-4 ">
                             <option selected value="">Sem Filtro</option>
-                            <option value="true">Agendados</option>
-                            <option value="false">Não Agendado</option>
+                            <option value="1">Agendados</option>
+                            <option value="0">Não Agendado</option>
                         </select>
 
                     </div>
