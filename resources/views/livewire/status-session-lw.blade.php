@@ -113,7 +113,7 @@
     @if($status == 'created' || $status == 'connecting')
     <!-- Qr Code Modal -->
     <input type="checkbox" id="my_modal_qr" class="modal-toggle" />
-    <div class="modal modal-open">
+    <div class="modal modal-open" wire:poll.10s>
         <div class="modal-box flex flex-col items-center">
             <h3 class="text-lg font-bold">Capture o QrCode para iniciar a Instância:</h3>
             <div class="form-control w-full max-w-full pt-8">
