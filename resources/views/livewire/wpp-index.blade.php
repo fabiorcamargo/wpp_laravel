@@ -46,9 +46,10 @@
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div>
-                                            @if($data->status == 'open' || $data->status == 'created' || $data->status == 'connecting')
+                                            @if($data->status == 'open' || $data->status == 'created' || $data->status
+                                            == 'connecting')
                                             <a href="{{route('wpp.show', ['wpp' => $data])}}">
-                                            <div class="">{{ $data->session }}</div>
+                                                <div class="">{{ $data->session }}</div>
                                             </a>
                                             @else
                                             <div class="">{{ $data->session }}</div>
@@ -57,17 +58,17 @@
                                         </div>
                                     </div>
                                 </td>
-                                
+
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div>
-                                                <div class="">{{ $data->name }}</div>
+                                            <div class="">{{ $data->name }}</div>
                                             {{--<div class="text-sm opacity-50">United States</div>--}}
                                         </div>
                                     </div>
                                 </td>
 
-                                
+
 
                                 <td>
                                     <div class="flex items-center space-x-3">
@@ -79,11 +80,11 @@
                                     </div>
                                 </td>
 
-                                
+
 
                                 <td>
                                     {{-- @if($data->status == 'CRIADO') --}}
-                                    <div class="badge badge-warning badge-outline" wire:poll.10s>{{$data->status}}</div>
+                                    <div class="badge badge-warning badge-outline" wire:poll.5s>{{$data->status}}</div>
                                     {{-- @elseif($data->status == 'QRCODE') --}}
                                     {{-- <div class="badge badge-success badge-outline">{{$data->status}}</div> --}}
                                     {{-- @elseif($data->status == 'CRIANDO') --}}
@@ -96,41 +97,47 @@
                                     <div class="join">
                                         @if($data->status == 'close')
                                         <div class="join-item tooltip" data-tip="Excluir">
-                                            <form id="deleteForm" action="{{ route('wpp.destroy', ['wpp' => $data]) }}" method="POST" class="inline-block">
+                                            <form id="deleteForm" action="{{ route('wpp.destroy', ['wpp' => $data]) }}"
+                                                method="POST" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" onclick="confirmDelete()" class="btn btn-square btn-md btn-error">
+                                                <button type="button" onclick="confirmDelete()"
+                                                    class="btn btn-square btn-md btn-error">
                                                     <x-feathericon-x />
                                                 </button>
                                             </form>
-                                           
+
                                         </div>
-                                        
+
                                         <div class="join-item tooltip" data-tip="Iniciar">
-                                        <form action="{{ route('startsession', ['id' => $data->id]) }}" method="POST"
-                                            class="inline-block">
-                                            @csrf
-                                            
-                                            <button type="submit" class="btn btn-square btn-md btn-success">
+                                            <button wire:loading.remove type="submit"
+                                                wire:click='StartSession({{$data->id}})'
+                                                class="btn btn-square btn-md btn-success">
                                                 <x-feathericon-play />
                                             </button>
-                                        </form>
+                                            <div wire:loading>
+                                                <button class="btn btn-square btn-md btn-disabled">
+                                                    <span class="loading loading-spinner"></span>
+                                                </button>
+                                            </div>
                                         </div>
                                         @endif
 
-                                        <div class="join-item tooltip" data-tip="Parar">
-                                            <form action="{{ route('stopinstance', ['id' => $data->id]) }}" method="POST"
-                                                class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-square btn-md btn-warning">
-                                                    <x-feathericon-pause />
+                                        <div class="join-item tooltip" data-tip="Iniciar">
+                                            <button wire:loading.remove type="submit"
+                                                wire:click='StopInstance({{$data->id}})'
+                                                class="btn btn-square btn-md btn-warning">
+                                                <x-feathericon-pause />
+                                            </button>
+                                            <div wire:loading wire:target="StopInstance">
+                                                <button class="btn btn-square btn-md btn-disabled">
+                                                    <span class="loading loading-spinner"></span>
                                                 </button>
-                                            </form>
                                             </div>
+                                        </div>
 
 
-                                        
+
 
                                     </div>
                                 </th>
@@ -210,5 +217,5 @@
             }
         }
     </script>
-    
+
 </div>
