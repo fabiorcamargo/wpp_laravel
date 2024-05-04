@@ -193,9 +193,11 @@ class GroupsTable extends Component
 
         $query = $this->wpp->Groups()->orderBy('creation', 'desc');
 
+        //dd($query);
+
         if ($this->search) {
             $query->where(function ($subquery) {
-                $subquery->where('name', 'like', '%' . $this->search . '%')
+                $subquery->where('name', 'like', '%' . $this->search . '%')->where('wpp_connect_id', $this->wpp->id)
                     ->orWhere('group_id', $this->search);
             });
         }
