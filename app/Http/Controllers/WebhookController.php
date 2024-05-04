@@ -92,9 +92,11 @@ class WebhookController extends Controller
 
         $this->entry = json_decode(json_encode($request->all()));
 
-        $return = new WppMessageReturn;
-        $return->create(['body' => json_encode($this->entry)]);
-
+        if(env('WEBHOOK_RETURN')){
+            $return = new WppMessageReturn;
+            $return->create(['body' => json_encode($this->entry)]);    
+        }
+        
         if ($this->entry->event == "connection.update") {
             if (WppConnect::where('session', $this->entry->instance)->first()) {
                 $wpp = WppConnect::where('session', $this->entry->instance)->first();

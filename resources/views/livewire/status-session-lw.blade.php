@@ -121,9 +121,11 @@
                     <img src="{{ $wpp->qrCode }}" alt="QR Code" class="mx-auto">
                 </div>
             </div>
+            <h2 class=" ">Caso não conecte, pare a instância e inicie novamente.</h2>
+            <label class="modal-backdrop" for="my_modal_qr">Close</label>
+        <a href='/wpp' class="btn btn-primary">Voltar</a>
         </div>
-        <label class="modal-backdrop" for="my_modal_qr">Close</label>
-        <button wire:click="render" class="btn btn-error">Fechar</button>
+        
     </div>
 @endif
 
