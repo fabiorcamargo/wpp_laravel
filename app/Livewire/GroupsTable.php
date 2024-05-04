@@ -38,7 +38,7 @@ class GroupsTable extends Component
     public $body;
     public $sch;
 
-    public $agendado;
+    public $agendado = false;
 
     public $listShow = '';
 
@@ -201,8 +201,11 @@ class GroupsTable extends Component
             });
         }
 
-        // Verificar se existe uma relação Schedule
-        $query->has('Schedule');
+        if ($this->agendado) {
+            // Verificar se existe uma relação Schedule
+            $query->has('Schedule');
+        }
+
 
         return view('livewire.groups-table', [
             'grupos' => $query->paginate(10, pageName: 'group'),
