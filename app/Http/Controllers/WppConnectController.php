@@ -112,7 +112,7 @@ class WppConnectController extends Controller
         // Caminho para o arquivo salvo
         $imagePath = Storage::path('qr.png');
 
-       dd($imagePath);
+       //dd($imagePath);
                 // Retornar a imagem como resposta
                 return response()->file($imagePath);
            
@@ -149,7 +149,7 @@ class WppConnectController extends Controller
                 // $imagePath = Storage::path('qr.png');
 
                 // Retornar a imagem como resposta
-                return $image;
+                return back();
             } else {
                 // Lidar com erros de resposta, se necessário
                 return response()->json(['error' => 'Erro ao obter o QR code'], $response->getStatusCode());
