@@ -90,11 +90,7 @@ class WebhookController extends Controller
     public function register(Request $request)
     {
 
-        //dd($request->all());
-
         $this->entry = json_decode(json_encode($request->all()));
-
-        //dd($this->entry->event);
 
         $return = new WppMessageReturn;
         $return->create(['body' => json_encode($this->entry)]);
@@ -111,9 +107,6 @@ class WebhookController extends Controller
             $this->status = $this->entry->data->state;
             $this->status();
         }
-
-
-
 
         return response('recebido', 201);
     }

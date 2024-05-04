@@ -36,7 +36,7 @@ class WppInstanceCreate implements ShouldQueue
             "qrcode"=> true,
             "number"=> $this->wpp->phone,
             "webhook"=> env('APP_URL') . 'api/webhook/' . $this->wpp->session,
-            "webhook_by_events"=> true,
+            "webhook_by_events"=> false,
             "events"=> [
               "QRCODE_UPDATED",
               "MESSAGES_UPSERT",
