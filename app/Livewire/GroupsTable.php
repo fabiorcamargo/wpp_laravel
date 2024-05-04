@@ -38,6 +38,8 @@ class GroupsTable extends Component
     public $body;
     public $sch;
 
+    public $agendado;
+
     public $listShow = '';
 
     protected $rules = [
@@ -194,9 +196,13 @@ class GroupsTable extends Component
         if ($this->search) {
             $query->where(function ($subquery) {
                 $subquery->where('name', 'like', '%' . $this->search . '%')
+
                     ->orWhere('group_id', $this->search);
             });
         }
+
+        // Verificar se existe uma relação Schedule
+        $query->has('Schedule');
 
         return view('livewire.groups-table', [
             'grupos' => $query->paginate(10, pageName: 'group'),

@@ -29,7 +29,7 @@
 
                     <div class="flex items-center mb-4 ">
 
-                        <select class="select select-bordered w-full max-w-xs mr-4 ">
+                        <select wire:model="search" class="select select-bordered w-full max-w-xs mr-4 ">
                             <option disabled selected>Sem Filtro</option>
                             <option>Agendados</option>
                             <option>Não Agendado</option>
