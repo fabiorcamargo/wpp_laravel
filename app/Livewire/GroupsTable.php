@@ -38,7 +38,7 @@ class GroupsTable extends Component
     public $body;
     public $sch;
 
-    public $agendado = false;
+    public $agendado = '';
 
     public $listShow = '';
 
