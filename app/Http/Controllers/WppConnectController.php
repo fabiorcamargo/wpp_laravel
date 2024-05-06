@@ -239,8 +239,13 @@ class WppConnectController extends Controller
 
         $wpp = WppConnect::where('session', $session)->first();
         if ($group == false) {
-            $phone = strlen($phone) > 11 ? "55" . $phone : $phone;
+            
+            $phone = strlen($phone) >= 11 ? "55" . $phone : $phone;
+            //dd($phone);
+
         }
+
+        //dd('n');
 
         $data = [
             'phone' => $phone,
