@@ -92,6 +92,7 @@ class WebhookController extends Controller
 
         $this->entry = json_decode(json_encode($request->all()));
 
+        
         if (env('WEBHOOK_RETURN')) {
             $return = new WppMessageReturn;
             $return->create(['body' => json_encode($this->entry)]);
@@ -112,7 +113,10 @@ class WebhookController extends Controller
                 $wpp->save();
             }
         } else if ($this->entry->event == "messages.update") {
+            //dd($this->entry);
             $this->status = $this->entry->data->status;
+
+            //dd($this->status);
             $this->status();
         }
 
@@ -124,8 +128,10 @@ class WebhookController extends Controller
     {
 
 
-        if (WppMessage::where('wppid', $this->entry->instance)->first()) {
-            $msg = WppMessage::where('wppid', $this->entry->instance)->first();
+        if (WppMessage::where('wppid', $this->entry->data->id)->first()) {
+            $msg = WppMessage::where('wppid', $this->entry->data->id)->first();
+
+            //dd($msg);
 
             $status = $this->status;
 
