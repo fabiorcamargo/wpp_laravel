@@ -92,30 +92,27 @@ class WebhookController extends Controller
 
         $this->entry = json_decode(json_encode($request->all()));
 
-        if(env('WEBHOOK_RETURN')){
+        if (env('WEBHOOK_RETURN')) {
             $return = new WppMessageReturn;
-            $return->create(['body' => json_encode($this->entry)]);    
+            $return->create(['body' => json_encode($this->entry)]);
         }
-        
+
         if ($this->entry->event == "connection.update") {
             if (WppConnect::where('session', $this->entry->instance)->first()) {
                 $wpp = WppConnect::where('session', $this->entry->instance)->first();
                 $wpp->status = $this->entry->data->state;
                 $wpp->save();
-            }else{
+            } else {
                 return response('Instância não existe ' . $this->entry->instance, 201);
             }
-        } else if ($this->entry->event == "qrcode.updated"){
+        } else if ($this->entry->event == "qrcode.updated") {
             if (WppConnect::where('session', $this->entry->instance)->first()) {
                 $wpp = WppConnect::where('session', $this->entry->instance)->first();
                 $wpp->qrCode = $this->entry->data->qrcode->base64;
                 $wpp->save();
             }
-
-
-
-        } else if (isset($this->entry->data->state)) {
-            $this->status = $this->entry->data->state;
+        } else if ($this->entry->event == "messages.update") {
+            $this->status = $this->entry->data->status;
             $this->status();
         }
 
