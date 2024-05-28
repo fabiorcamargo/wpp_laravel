@@ -33,7 +33,7 @@ class Kernel extends ConsoleKernel
             }
         })->everyMinute()->name('Call-Schedule-Job');
 
-        Schedule::command('horizon:snapshot')->everyFiveMinutes();
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
 
     }
 
