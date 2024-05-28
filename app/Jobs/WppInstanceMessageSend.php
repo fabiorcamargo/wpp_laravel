@@ -113,4 +113,8 @@ class WppInstanceMessageSend implements ShouldQueue
             }
         }
     }
+    
+    public function tags():array{
+        return ['MsgSend'];
+    }
 }
