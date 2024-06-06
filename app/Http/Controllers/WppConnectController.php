@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WppRules;
+use App\Jobs\WppGroupCreate;
+use App\Jobs\WppGroupCreateProcess;
 use App\Jobs\WppInstanceCreate;
 use App\Jobs\WppInstanceDelete;
 use App\Jobs\WppInstanceImgSend;
@@ -417,56 +419,8 @@ class WppConnectController extends Controller
     public function get_groups($id)
     {
 
-        $wpp = WppConnect::find($id);
+        WppGroupCreateProcess::dispatch($id);
 
-        $url = env('URL_API') . '/group/fetchAllGroups/' . $wpp->session . '?getParticipants=false';
-
-        try {
-
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                    'apikey' => env('WPP_KEY')
-            ])->get($url);
-
-            //dd(json_decode($response));
-            // Verifique o status da resposta
-            if ($response->getStatusCode() === 200) {
-                // A solicitação foi bem-sucedida
-                // Faça algo com os dados
-
-                $responseData = json_decode($response);
-                //$status = $responseData['status'];
-
-                //dd( ($responseData['response']));
-
-                $this->up_groups($responseData, $wpp);
-                //return $status;
-            } else {
-                // Lidar com erros de resposta HTTP
-                echo 'Erro na solicitação: ' . $response->getStatusCode();
-            }
-        } catch (RequestException $e) {
-            // Captura exceções do Guzzle
-            if ($e->hasResponse()) {
-                // Se houver uma resposta HTTP no erro, você pode acessá-la
-                $response = $e->getResponse();
-                $statusCode = $response->getStatusCode();
-                $errorBody = $response->getBody()->getContents();
-                // Faça o que quiser com a resposta de erro
-                echo "Erro na solicitação: Status $statusCode, Response: $errorBody";
-
-                /* $this->wpp->update([
-                    'status' => 'Erro'
-                ]);*/
-            } else {
-                // Lidar com outros tipos de erros (por exemplo, problemas de rede)
-                echo "Erro na solicitação: " . $e->getMessage();
-
-                /*$this->wpp->update([
-                    'status' => 'Erro'
-                ]);*/
-            }
-        }
     }
 
     public function up_groups($data, $wpp)
@@ -474,25 +428,6 @@ class WppConnectController extends Controller
         //dd($data);
         //dd($wpp);
 
-        foreach ($data as $key => $group) {
-
-
-            if (isset($group->creation)) {
-                $create = strlen($group->creation) > 10 ? date("Y-m-d H:i:s", $group->creation / 1000) : date("Y-m-d H:i:s", $group->creation);
-            } else {
-                $create = '';
-            }
-
-
-            if ($group->id) {
-                //dd($wpp->Groups()->where('group_id', $group['contact']['id']['user'])->exists());
-                if (!$wpp->Groups()->where('group_id', $group->id)->where('wpp_connect_id', $wpp->id)->exists())
-                    $wpp->Groups()->create([
-                        'group_id' => $group->id,
-                        'name' => isset($group->subject) ? $group->subject : 'Sem Nome',
-                        'creation' =>  $create
-                    ]);
-            }
-        }
+        WppGroupCreateProcess::dispatch($data, $wpp);
     }
 }

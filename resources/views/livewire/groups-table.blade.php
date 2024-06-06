@@ -39,9 +39,27 @@
 
                     <div class="flex items-center mb-4 ">
 
-                        <button class="btn btn-active btn-primary" wire:click="up_groups">Atualizar</button>
-
+                        
+                    
+                    <div x-data="buttonHandler()">
+                        <div x-data="buttonHandler()">
+                            <button 
+                                class="btn btn-active btn-primary" 
+                                @click="disableButton(); $wire.up_groups()" 
+                                :class="{ 'hidden': isUpdating }">
+                                Atualizar
+                            </button>
+                            <button 
+                                class="btn btn-disabled" 
+                                x-show="isUpdating" 
+                                style="display: none;">
+                                <span class="loading loading-spinner"></span>
+                                Atualizando
+                            </button>
+                        </div>
                     </div>
+
+                </div>
 
                 </div>
             </div>
@@ -562,5 +580,41 @@
         </div>
     </div>
 </div>
-
+<script>
+    function buttonHandler() {
+        return {
+            isDisabled: false,
+            isUpdating: false,
+            disableButton() {
+                this.isDisabled = true;
+                this.isUpdating = true;
+                const disableUntil = Date.now() + 60000; // 1 minuto
+                sessionStorage.setItem('buttonDisabledUntil', disableUntil);
+                this.checkButtonState();
+            },
+            checkButtonState() {
+                const disableUntil = sessionStorage.getItem('buttonDisabledUntil');
+                if (disableUntil) {
+                    const now = Date.now();
+                    if (now < disableUntil) {
+                        this.isDisabled = true;
+                        this.isUpdating = true;
+                        setTimeout(() => {
+                            this.isDisabled = false;
+                            this.isUpdating = false;
+                            sessionStorage.removeItem('buttonDisabledUntil');
+                        }, disableUntil - now);
+                    } else {
+                        this.isDisabled = false;
+                        this.isUpdating = false;
+                        sessionStorage.removeItem('buttonDisabledUntil');
+                    }
+                }
+            },
+            init() {
+                this.checkButtonState();
+            }
+        }
+    }
+</script>
 </div>
