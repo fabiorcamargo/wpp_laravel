@@ -23,7 +23,6 @@ class WppInstanceMessageSend implements ShouldQueue
 
     public $tries = 5;
     public $timeout = 120;
-    public $delay = 5;
 
     public function __construct($mensagem)
     {
