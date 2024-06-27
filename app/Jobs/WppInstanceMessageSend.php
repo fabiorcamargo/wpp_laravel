@@ -12,46 +12,36 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class WppInstanceMessageSend implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    /**
-     * Create a new job instance.
-     */
 
     protected $message;
     protected $batch;
 
     public $tries = 5;
     public $timeout = 120;
-    public $delay = 5; // Delay de 5 segundos
-
+    public $delay = 5;
 
     public function __construct($mensagem)
     {
         $this->message = $mensagem;
-        $mensagem->batch !== null ? $this->batch = $mensagem->batch : "";
+        $this->batch = $mensagem->batch;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-
         $wpp = $this->message->wpp;
-
         $url = env('URL_API') . '/message/sendText/' . $wpp->session;
-        
+
         $body = [
-            "number"=> $this->message->phone,
+            "number" => $this->message->phone,
             "options" => [
-                "delay"=> 1200,
-                "presence"=> "composing",
-                "linkPreview"=> false
+                "delay" => 1200,
+                "presence" => "composing",
+                "linkPreview" => false
             ],
             "textMessage" => [
                 "text" => $this->message->body
@@ -59,66 +49,55 @@ class WppInstanceMessageSend implements ShouldQueue
         ];
 
         try {
-            
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                    'apikey' => env('WPP_KEY')
+                'apikey' => env('WPP_KEY')
             ])->post($url, $body);
 
-            //dd(json_decode($response, true));
-
-
-            // Verifique o status da resposta
             if ($response->getStatusCode() === 201) {
+                $data = json_decode($response, true);
+                $data['wppid'] = $data['key']['id'];
+                $data['phone'] = $data['key']['remoteJid'];
+                $data['status'] = "ENVIADO";
 
-            $data = json_decode($response, true);
-            //dd($data);
+                $this->message->update($data);
 
-            $data['wppid'] = $data['key']['id'];
-            $data['phone'] = $data['key']['remoteJid'];
-            $data['status'] = "ENVIADO";
-
-                // A solicitação foi bem-sucedida
-                // Faça algo com os dados
-
-            $this->message->update($data);
-
-            
-
-            if($this->batch !== null){
-                $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
-                $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
-                $this->batch->save();
-            }
-                
+                if ($this->batch) {
+                    $totalMessages = count(json_decode($this->batch->body, true));
+                    $completedMessages = $this->batch->status / 100 * $totalMessages + 1;
+                    $this->batch->status = ($completedMessages / $totalMessages) * 100;
+                    $this->batch->save();
+                }
             } else {
-                // Lidar com erros de resposta HTTP
-                echo 'Erro na solicitação: ' . $response->getStatusCode();
+                Log::error('Erro na solicitação: ' . $response->getStatusCode());
+                $this->handleFailedRequest();
             }
         } catch (RequestException $e) {
-            // Captura exceções do Guzzle
-            if ($e->hasResponse()) {
-                // Se houver uma resposta HTTP no erro, você pode acessá-la
-                $response = $e->getResponse();
-                $statusCode = $response->getStatusCode();
-                $errorBody = $response->getBody()->getContents();
-                // Faça o que quiser com a resposta de erro
-                echo "Erro na solicitação: Status $statusCode, Response: $errorBody";
-
-                $data['status'] = "ERRO";
-
-                $this->message->update($data);
-            } else {
-                // Lidar com outros tipos de erros (por exemplo, problemas de rede)
-                echo "Erro na solicitação: " . $e->getMessage();
-
-                $data['status'] = "ERRO";
-                $this->message->update($data);
-            }
+            $this->handleException($e);
         }
     }
-    
-    public function tags():array{
+
+    protected function handleFailedRequest(): void
+    {
+        $this->message->update(['status' => 'ERRO']);
+    }
+
+    protected function handleException(RequestException $e): void
+    {
+        if ($e->hasResponse()) {
+            $response = $e->getResponse();
+            $statusCode = $response->getStatusCode();
+            $errorBody = $response->getBody()->getContents();
+            Log::error("Erro na solicitação: Status $statusCode, Response: $errorBody");
+        } else {
+            Log::error("Erro na solicitação: " . $e->getMessage());
+        }
+
+        $this->handleFailedRequest();
+    }
+
+    public function tags(): array
+    {
         return ['MsgSend'];
     }
 }
