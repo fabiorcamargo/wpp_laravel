@@ -25,6 +25,10 @@ class WppInstanceMessageSend implements ShouldQueue
     protected $message;
     protected $batch;
 
+    public $tries = 5;
+    public $timeout = 120;
+    public $delay = 5; // Delay de 5 segundos
+
 
     public function __construct($mensagem)
     {
