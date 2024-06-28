@@ -19,7 +19,7 @@ class CsvConverter extends Component
 
     public $batchType = 'Texto';
     public $batchDelay = 5;
-    
+
     public $img;
     public $imgUrl;
     public $photos;
@@ -33,7 +33,8 @@ class CsvConverter extends Component
     public $selectedPhoto = null;
 
 
-    public function changeType() {
+    public function changeType()
+    {
         dd($this->batchType);
     }
 
@@ -68,19 +69,19 @@ class CsvConverter extends Component
         $this->data = $data[0];
 
         session()->flash('message', 'Arquivo CSV carregado com sucesso!');
-
-
     }
 
     public function SaveBatch(Request $request)
     {
         $dados = [];
 
+        // Remover o cabeçalho e processar os dados
+        $cabecalho = array_shift($this->data);
 
         foreach ($this->data as $linha) {
             $linha_dados = [];
             foreach ($linha as $key => $value) {
-                $nome_coluna = $this->data[0][$key];
+                $nome_coluna = $cabecalho[$key];
                 $linha_dados[$nome_coluna] = $value;
                 $linha_dados['img'] = $this->selectedPhoto;
                 $linha_dados['type'] = $this->batchType;
@@ -89,15 +90,12 @@ class CsvConverter extends Component
             $dados[] = $linha_dados;
         }
 
-        Arr::forget($dados, 0);
+        // Filtrar dados sem telefone
+        $dados = array_filter($dados, function ($item) {
+            return !empty($item['Telefone']);
+        });
 
-        foreach ($dados as $key => $value) {
-            if ($value["Telefone"] === null) {
-                unset($dados[$key]);
-            }
-        }
-
-        //dd($dados);
+        // dd($dados);
 
         $this->wpp->Batch()->create([
             'msg' => $this->msg,
@@ -110,6 +108,7 @@ class CsvConverter extends Component
 
         return redirect(route('wpp.show', ['wpp' => $this->wpp]));
     }
+
 
     public function saveImg()
     {
@@ -128,5 +127,4 @@ class CsvConverter extends Component
 
         $this->gallery();
     }
-
 }
