@@ -47,7 +47,7 @@ class WppGroupCreateProcess implements ShouldQueue
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                     'apikey' => env('WPP_KEY')
-            ])->get($url);
+            ])->timeout(360)->get($url);
 
             //dd(json_decode($response));
             // Verifique o status da resposta
