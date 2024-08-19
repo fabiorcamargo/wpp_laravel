@@ -19,6 +19,7 @@ class WppGroupCreateProcess implements ShouldQueue
     protected $id;
     protected $wpp;
     protected $data;
+    public $timeout = 0;
 
     /**
      * Create a new job instance.
