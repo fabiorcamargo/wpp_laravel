@@ -18,6 +18,7 @@ use App\Models\WppSchedule;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
 /*
@@ -57,6 +58,16 @@ Route::middleware([
     })->name('dashboard');*/
 
     Route::resource('wpp', WppConnectController::class);
+
+    Route::get('groups', function(){
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+                'apikey' => env('WPP_KEY')
+        ])->get('http://localhost:3000/get-group-jids?page=1&limit=5');
+
+        dd($response->body());
+        
+    })->name('user');
 
     Route::get('startsession/{id}', [WppConnectController::class, 'StartSession'])->name('startsession');
     Route::get('qrcode/{id}', [WppConnectController::class, 'QrCode'])->name('qrcode');
