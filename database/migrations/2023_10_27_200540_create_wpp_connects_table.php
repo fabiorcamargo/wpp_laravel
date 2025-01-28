@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wpp_connects', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users', 'id');
-            $table->string('name');
-            $table->string('phone');
-            $table->string('session');
-            $table->string('token')->nullable();
-            $table->string('status');
-            $table->timestamps();
-        });
+            Schema::create('wpp_connects', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users', 'id');
+                $table->string('name');
+                $table->string('phone');
+                $table->string('session');
+                $table->string('token')->nullable();
+                $table->string('status');
+                $table->timestamps();
+            });
     }
 
     /**

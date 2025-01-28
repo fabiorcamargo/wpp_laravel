@@ -20,6 +20,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +61,8 @@ Route::middleware([
     Route::resource('wpp', WppConnectController::class);
 
     Route::get('test', function () {
+        $tokens = PersonalAccessToken::where('tokenable_id', auth()->user()->id)->first()->token;
+        dd($tokens);
         $wpp = WppConnect::find(13);
         dd($wpp->QrCode()->create(['qr_code' => 'test']));
         dd(json_decode(WppBatch::find(11)->body));

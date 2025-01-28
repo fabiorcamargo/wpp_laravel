@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use App\Models\WppConnect;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
@@ -13,6 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class WppInstanceCreate implements ShouldQueue
 {
@@ -21,18 +23,23 @@ class WppInstanceCreate implements ShouldQueue
     protected $url;
     protected $wpp;
     protected $body;
+    protected $token;
 
     /**
      * Create a new job instance.
      */
     public function __construct(WppConnect $wpp)
     {
-        $this->url = env('URL_API') . '/sessions/add';
+        
         $this->wpp = $wpp;
 
         $this->body = [
             "sessionId" => $this->wpp->session
         ];
+        $id = $wpp->user_id;
+        $user = User::find($id);
+        $this->url = $user->url_api . '/sessions/add';
+        $this->token = PersonalAccessToken::where('tokenable_id', $user->id)->first()->token;
     }
 
     /**
@@ -45,7 +52,7 @@ class WppInstanceCreate implements ShouldQueue
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                    'x-api-key' => env('WPP_KEY')
+                    'x-api-key' => $this->token
             ])->post($this->url, $this->body);
 
             // Obtenha o corpo da resposta como uma string

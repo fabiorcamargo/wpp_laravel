@@ -51,8 +51,8 @@ class WppConnectController extends Controller
 
         $request['session'] = (string) Str::orderedUuid();
         $request['status'] = 'CRIANDO';
+        
         $wpp = auth()->user()->getWpp()->create($request->all());
-
 
         $request->session()->flash('flash.banner', 'Instância enviada para criação');
 

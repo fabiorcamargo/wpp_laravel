@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class WppInstanceMessageSend implements ShouldQueue
 {
@@ -41,7 +42,7 @@ class WppInstanceMessageSend implements ShouldQueue
         $wpp = $this->message->wpp;
 
         //dd($this->message->phone);
-        $url = env('URL_API') . '/' . $wpp->session . '/' . 'messages/send';
+        $url = $wpp->url_api . '/' . $wpp->session . '/' . 'messages/send';
         
         $body = [
             "jid"=> $this->message->phone,
@@ -54,7 +55,7 @@ class WppInstanceMessageSend implements ShouldQueue
             
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                    'x-api-key' => env('WPP_KEY')
+                    'x-api-key' => PersonalAccessToken::where('tokenable_id', auth()->user()->id)->first()->token
             ])->post($url, $body);
 
             //dd(json_decode($response, true));

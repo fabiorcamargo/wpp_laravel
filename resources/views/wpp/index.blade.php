@@ -184,13 +184,13 @@
                     <label class="label">
                         <span class="label-text">Nome:</span>
                     </label>
-                    <input type="text" id="name" name="name" placeholder="Type here"
+                    <input type="text" id="name" name="name" placeholder="Ex: Vendas, Comercial, ect"
                         class="input input-bordered w-full max-w-full  " />
 
                     <label class="label">
                         <span class="label-text">Número do Whatsapp:</span>
                     </label>
-                    <input type="text" id="phone" name="phone" placeholder="Type here"
+                    <input type="text" id="phone" name="phone" placeholder="Ex: 5544987654321"
                         class="input input-bordered w-full max-w-full" />
 
                     <button type="submit" class="btn mt-4">Criar</button>

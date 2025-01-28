@@ -18,6 +18,8 @@ class WppConnect extends Model
         'session',
         'token',
         'status',
+        'wpp_key',
+        'url_api'
 ];
 
     public function Messages(): HasMany
