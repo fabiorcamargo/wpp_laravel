@@ -106,7 +106,7 @@ class WebhookController extends Controller
         }
 
         if($this->entry->event == "connection.update"){
-            $wpp = WppConnect::where('session', $this->entry->sessionId);
+            $wpp = WppConnect::where('session', $this->entry->sessionId)->first();
             $wpp->status = $this->entry->data->status;
             $wpp->save();
         }
