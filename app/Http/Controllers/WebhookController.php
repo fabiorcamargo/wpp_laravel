@@ -88,7 +88,7 @@ class WebhookController extends Controller
 
     public function register(Request $request){
 
-        //dd($request->all());
+        dd($request->all());
 
         $this->entry = json_decode(json_encode($request->all()));
 
@@ -112,8 +112,8 @@ class WebhookController extends Controller
     public function status(){
 
 
-        if(WppMessage::where('wppid', $this->entry->data->id)->first()){
-            $msg = WppMessage::where('wppid', $this->entry->data->id)->first();
+        if(WppMessage::where('wppid', $this->entry->data->sessionId)->first()){
+            $msg = WppMessage::where('wppid', $this->entry->data->sessionId)->first();
 
             $status = $this->status;
     
