@@ -65,10 +65,9 @@ class WppInstanceCreate implements ShouldQueue
                 //     'status' => $data['instance']['status']
                 // ]);
 
-                $this->wpp->QrCode->create([
-                    'qr_code' => $data['qr']
-                ]);
-
+                $this->wpp->QrCode()->create(['qr_code' => $data['qr']]);
+                $this->wpp->status = "wait_for_qrcode_auth";
+                $this->wpp->save();
                 //dispatch(new WppInstanceStartSession($this->wpp));
 
             } else {

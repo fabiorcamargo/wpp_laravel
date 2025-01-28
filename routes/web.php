@@ -60,7 +60,8 @@ Route::middleware([
     Route::resource('wpp', WppConnectController::class);
 
     Route::get('test', function () {
-
+        $wpp = WppConnect::find(13);
+        dd($wpp->QrCode()->create(['qr_code' => 'test']));
         dd(json_decode(WppBatch::find(11)->body));
         
     });
