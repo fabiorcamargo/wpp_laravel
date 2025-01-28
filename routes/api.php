@@ -33,4 +33,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-Route::post('webhook/{session}/{event}', [WebhookController::class, 'register'])->name('webwook.register');
+Route::post('webhook/', [WebhookController::class, 'register'])->name('webwook.register');
