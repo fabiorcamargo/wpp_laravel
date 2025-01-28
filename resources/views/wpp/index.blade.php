@@ -40,6 +40,29 @@
                         </thead>
                         <tbody>
                             @foreach ($datas as $data)
+
+                            <dialog id="delete_modal" class="modal">
+                                <div class="modal-box">
+                                    <h3 class="text-lg font-bold">Excluir Instância</h3>
+                                    <p class="py-4">Você realmente deseja excluir a instância?<br> Essa ação é irreversível.</p>
+                                    <div class="modal-action">
+                                        <form method="dialog">
+                                            <!-- if there is a button in form, it will close the modal -->
+                                            <div>
+                                                <form action="{{ route('wpp.destroy', ['wpp' => $data]) }}" method="POST"
+                                                    class="inline-block">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-error px-10">
+                                                        Sim
+                                                    </button>
+                                                </form>
+                                                <button class="btn">Não</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </dialog>
                             <!-- rows -->
                             <input type="checkbox" id="qr_modal{{ $data->name }}" class="modal-toggle" />
 
@@ -95,14 +118,11 @@
                                 <th>
                                     <div class="join">
                                         <div class="join-item tooltip" data-tip="Excluir">
-                                            <form action="{{ route('wpp.destroy', ['wpp' => $data]) }}" method="POST"
-                                                class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-square btn-error">
+                                            
+                                                <button type="submit" onclick="delete_modal.showModal()" class="btn btn-square btn-error">
                                                     <x-feathericon-x />
                                                 </button>
-                                            </form>
+                                            
                                         </div>
 
                                     </div>
@@ -175,4 +195,6 @@
         </div>
         <label class="modal-backdrop" for="my_modal_7">Close</label>
     </div>
+
+    
 </x-app-layout>

@@ -30,6 +30,7 @@ class WppConnectController extends Controller
     public function index()
     {
         $datas = auth()->user()->getWpp()->get();
+        //dd($datas);
 
         return view('wpp.index', ['datas' => $datas]);
     }
@@ -87,7 +88,7 @@ class WppConnectController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Request $request, $id)
-    {
+    {   
         WppConnect::find($id)->delete();
 
         return back()->banner('Instância excluída com sucesso');
@@ -250,11 +251,12 @@ class WppConnectController extends Controller
 
     public function SendMessage($session, $phone, $msg, $group)
     {
-
         $wpp = WppConnect::where('session', $session)->first();
         if ($group == false) {
-            $phone = strlen($phone) > 11 ? "55" . $phone : $phone;
+            $phone = strlen($phone) > 10 ? "55" . $phone : $phone;
+            //dd($phone);
         }
+        //dd($phone);
 
         $data = [
             'phone' => $phone,
@@ -265,7 +267,10 @@ class WppConnectController extends Controller
 
         $mensagem = $wpp->Messages()->create($data);
 
-        dispatch(new WppInstanceMessageSend($mensagem));
+        // $job = new WppInstanceMessageSend($mensagem);
+        // $job->handle();
+
+        dispatch(new WppInstanceMessageSend($mensagem))->onQueue('zapfabio');
     }
 
     public function SendImg($session, $phone, $msg, $img, $group)

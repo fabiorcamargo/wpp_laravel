@@ -3,7 +3,6 @@
 namespace App\Observers;
 
 use App\Jobs\WppInstanceMessageSend;
-use App\Jobs\WppSendMessageBatch;
 use App\Models\WppBatch;
 
 class WppBatchObserver
@@ -13,31 +12,47 @@ class WppBatchObserver
      */
     public function created(WppBatch $wppBatch): void
     {
-        $body = json_decode($wppBatch->body);
+        $body = json_decode($wppBatch->body, true); // Adicionando true para retorno como array
         $wpp = $wppBatch->wpp()->first();
         $msg = $wppBatch->msg;
-        $time = 3;
-        $wpp = $wppBatch->wpp()->first();       
+        $time = $wppBatch->delay;
 
-        foreach ($body as $send) {
-            $phone = strlen($send[1]) < 11 ? "55" . $send[1] : $send[1];
+        // Pegando os nomes das colunas
+        $colunas = $body[0]; // Primeira linha do body contém os nomes das colunas
+
+        // Iterando sobre os dados (começando pela segunda linha)
+        foreach ($body as $index => $linha) {
+            if ($index === 0) {
+                continue; // Ignora a primeira linha que contém os cabeçalhos
+            }
+
+            // Fazendo a substituição dos placeholders pelos valores
+            $mensagem_completa = $msg;
+            foreach ($linha as $key => $valor) {
+                $mensagem_completa = str_replace("{" . $colunas[$key] . "}", $valor, $mensagem_completa);
+            }
+
+            // Validando e ajustando o telefone
+            $phone = strlen($linha[1]) < 10 ? "55" . $linha[1] : $linha[1];
+
+            // Preparando os dados para a criação da mensagem
             $data = [
                 'phone' => $phone,
                 'type' => 'chat',
-                'body' => $msg,
+                'body' => $mensagem_completa,
                 'group' => false
             ];
-            
-            $mensagem = $wpp->Messages()->create($data);
 
+            $mensagem = $wpp->Messages()->create($data);
             $mensagem->batch = $wppBatch;
 
-            //dd($mensagem);
+            // Disparando o envio da mensagem
+            dispatch(new WppInstanceMessageSend($mensagem, $wppBatch))->delay($time);
+            
+            
 
-            
-            dispatch(new WppInstanceMessageSend($mensagem))->delay($time);
-            
-            $time = $time + 3;
+            // Aumentando o tempo de delay para a próxima mensagem
+            $time = $time + $wppBatch->delay;
         }
     }
 

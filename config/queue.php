@@ -71,6 +71,15 @@ return [
             'after_commit' => false,
         ],
 
+        'zapfabio' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'zapfabio',
+            'retry_after' => 90,
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
     ],
 
     /*

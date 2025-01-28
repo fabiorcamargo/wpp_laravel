@@ -27,26 +27,12 @@ class WppInstanceCreate implements ShouldQueue
      */
     public function __construct(WppConnect $wpp)
     {
-        $this->url = env('URL_API') . '/instance/create';
+        $this->url = env('URL_API') . '/sessions/add';
         $this->wpp = $wpp;
 
         $this->body = [
-            "instanceName" => $this->wpp->session,
-            "token"=> Str::random(60),
-            "qrcode"=> true,
-            "number"=> $this->wpp->phone,
-            "webhook"=> env('APP_URL') . '/api/webhook/' . $this->wpp->session,
-            "webhook_by_events"=> false,
-            "events"=> [
-              "QRCODE_UPDATED",
-              "MESSAGES_UPSERT",
-              "MESSAGES_UPDATE",
-              "MESSAGES_DELETE",
-              "SEND_MESSAGE",
-              "CONNECTION_UPDATE",
-              "CALL"
-            ]
-            ];
+            "sessionId" => $this->wpp->session
+        ];
     }
 
     /**
@@ -59,7 +45,7 @@ class WppInstanceCreate implements ShouldQueue
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                    'apikey' => env('WPP_KEY')
+                    'x-api-key' => env('WPP_KEY')
             ])->post($this->url, $this->body);
 
             // Obtenha o corpo da resposta como uma string
@@ -68,16 +54,16 @@ class WppInstanceCreate implements ShouldQueue
             // Você pode fazer o que quiser com $responseBody, como convertê-lo em um array JSON
             $data = json_decode($responseBody, true);
 
-
+                //dd($data);
 
             // Verifique o status da resposta
             if ($response->getStatusCode() === 201) {
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
-                $this->wpp->update([
-                    'token' => $data['hash']['apikey'],
-                    'status' => $data['instance']['status']
-                ]);
+                // $this->wpp->update([
+                //     'token' => $data['hash']['apikey'],
+                //     'status' => $data['instance']['status']
+                // ]);
 
                 //dispatch(new WppInstanceStartSession($this->wpp));
 

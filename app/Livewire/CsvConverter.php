@@ -16,6 +16,7 @@ class CsvConverter extends Component
     public $data = [];
     public $msg;
     public $wpp;
+    public $delay = 5;
 
 
     public function render()
@@ -26,13 +27,17 @@ class CsvConverter extends Component
     public function charge()
     {
 
+        //dd($this->file);
         $this->validate(['file' => 'required|mimes:csv,xlsx']);
 
         $path = $this->file->storeAs('uploads', 'uploaded_file.' . $this->file->getClientOriginalExtension());
 
-
+        //dd($path);
         // Utilize o Laravel Excel para importar os dados do CSV
-        $data = Excel::toArray(null, ('storage/' . $path));
+        $data = Excel::toArray(null, $path);
+        //dd($data[0][0]);
+
+        
 
         //dd($data);
         // Armazene os dados em uma propriedade para exibição na tabela
@@ -46,12 +51,13 @@ class CsvConverter extends Component
     public function SaveBatch(Request $request)
     {
         // Remove a chave especificada do array
-        Arr::forget($this->data, 0);
+        //Arr::forget($this->data, 0);
 
         $this->wpp->Batch()->create([
             'msg' => $this->msg,
             'body' => json_encode($this->data),
-            'status' => 0
+            'status' => 0,
+            'delay' => $this->delay
         ]);
 
         $request->session()->flash('flash.banner', 'Enviados para fila de disparo!');

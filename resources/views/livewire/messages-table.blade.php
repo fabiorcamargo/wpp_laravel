@@ -17,7 +17,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <div wire:poll.15s> 
+                    <div wire:poll.5000ms> 
                     @foreach($mensagens as $mensagem)
                     <tr>
                         <td>{{ $mensagem->updated_at->format('d/m/y H:i:s') }}</td>

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Http\Controllers\WppConnectController;
 use App\Models\WppConnect;
+use Illuminate\Support\Facades\Artisan;
 use Livewire\Component;
 
 class StatusSessionLw extends Component
@@ -12,6 +13,8 @@ class StatusSessionLw extends Component
     public $qr;
     public $id = '';
     public $wpp;
+    public $isVisible = true;
+
 
     public function sendRequest()
     {
@@ -24,9 +27,31 @@ class StatusSessionLw extends Component
 
     }
 
+    public function stopSend() {
+        //Artisan::call('horizon:clear', ['--queue' => 'zapfabio']);
+
+        shell_exec('php /home/fabio/laravel/zap/artisan horizon:clear');
+
+        session()->flash('message', 'Envio parado com sucesso!');
+
+    }
+
+    public function dismiss()
+    {
+        $this->isVisible = false;
+
+    }
+
     public function render() {
-        $wpp = new WppConnectController;
-        $this->status = $wpp->StatusSession($this->id);
+        //dd('s');
+        $wpp = WppConnect::find($this->id);
+        
+        $this->status = $wpp->status;
+
+        //dd($this->status);
+        $this->qr = $wpp->QrCode->qr_code ?? '';
+        //dd($this->qr);
+        
         if($this->status == "connecting"){
             $this->sendRequest();
         }

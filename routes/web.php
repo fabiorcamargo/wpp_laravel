@@ -59,6 +59,12 @@ Route::middleware([
 
     Route::resource('wpp', WppConnectController::class);
 
+    Route::get('test', function () {
+
+        dd(json_decode(WppBatch::find(11)->body));
+        
+    });
+
     Route::get('groups', function(){
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',

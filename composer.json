@@ -10,6 +10,7 @@
         "brunocfalcao/blade-feather-icons": "^3.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
+        "laravel/horizon": "^5.30",
         "laravel/jetstream": "^4.0",
         "laravel/sanctum": "^3.2",
         "laravel/telescope": "^4.16",

@@ -146,6 +146,7 @@ class GroupsTable extends Component
 
     public function up_groups()
     {
+        dd('Em breve');
         $WppControler = new WppConnectController;
         $WppControler->get_groups($this->wpp->id);
     }

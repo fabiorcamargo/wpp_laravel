@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class WppConnect extends Model
 {
@@ -37,6 +38,11 @@ class WppConnect extends Model
     public function Batch(): HasMany
     {
         return $this->hasMany(WppBatch::class);
+    }
+
+    public function QrCode(): HasOne
+    {
+        return $this->hasOne(WppQr::class);
     }
 
 }

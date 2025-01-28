@@ -1,22 +1,6 @@
 <x-app-layout>
-
-    {{--}} @if ($errors->any())
-    <div class="toast toast-center toast-middle z-50" id="toast">
-        <div class="alert alert-error">
-            <span>
-                @foreach ($errors->all() as $error)
-                <p>{{ $error }} </p>
-                @endforeach
-                <button class="btn btn-block  btn-xs mt-4"
-                    onclick="document.getElementById('toast').style.display = 'none'">Fechar</button>
-            </span>
-        </div>
-    </div>
-    @endif--}}
-
     <div class="mx-auto pt-4 px-4">
         @livewire('status-session-lw', ['id' => $wpp->id])
-
     </div>
     
 

@@ -40,16 +40,12 @@ class WppInstanceMessageSend implements ShouldQueue
 
         $wpp = $this->message->wpp;
 
-        $url = env('URL_API') . '/message/sendText/' . $wpp->session;
+        //dd($this->message->phone);
+        $url = env('URL_API') . '/' . $wpp->session . '/' . 'messages/send';
         
         $body = [
-            "number"=> $this->message->phone,
-            "options" => [
-                "delay"=> 1200,
-                "presence"=> "composing",
-                "linkPreview"=> false
-            ],
-            "textMessage" => [
+            "jid"=> $this->message->phone,
+            "message" => [
                 "text" => $this->message->body
             ]
         ];
@@ -58,20 +54,20 @@ class WppInstanceMessageSend implements ShouldQueue
             
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                    'apikey' => env('WPP_KEY')
+                    'x-api-key' => env('WPP_KEY')
             ])->post($url, $body);
 
             //dd(json_decode($response, true));
 
 
             // Verifique o status da resposta
-            if ($response->getStatusCode() === 201) {
+            if ($response->getStatusCode() === 200) {
 
             $data = json_decode($response, true);
-            //dd($data);
+            //dd($datakey);
 
             $data['wppid'] = $data['key']['id'];
-            $data['phone'] = $data['key']['remoteJid'];
+            //$data['phone'] = $data['key']['remoteJid'];
             $data['status'] = "ENVIADO";
 
                 // A solicitação foi bem-sucedida
