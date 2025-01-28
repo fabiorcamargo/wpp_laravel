@@ -119,9 +119,14 @@
                                     <div class="join">
                                         <div class="join-item tooltip" data-tip="Excluir">
                                             
-                                                <button type="submit" onclick="delete_modal.showModal()" class="btn btn-square btn-error">
-                                                    <x-feathericon-x />
+                                            <form action="{{ route('wpp.destroy', ['wpp' => $data]) }}" method="POST"
+                                                class="inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-error btn-xs px-10">
+                                                    Excluir
                                                 </button>
+                                            </form>
                                             
                                         </div>
 
