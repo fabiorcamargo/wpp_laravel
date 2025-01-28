@@ -119,15 +119,15 @@ class WebhookController extends Controller
     public function status(){
 
 
-        if(WppMessage::where('wppid', $this->entry->data->sessionId)->first()){
-            $msg = WppMessage::where('wppid', $this->entry->data->sessionId)->first();
+        // if(WppMessage::where('wppid', $this->entry->data->sessionId)->first()){
+        //     $msg = WppMessage::where('wppid', $this->entry->data->sessionId)->first();
 
-            $status = $this->status;
+        //     $status = $this->status;
     
-            $msg->status = $status;
+        //     $msg->status = $status;
             
-            $msg->save();
-        }
+        //     $msg->save();
+        // }
         
     }
 
