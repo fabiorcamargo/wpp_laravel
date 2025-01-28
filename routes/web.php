@@ -12,12 +12,15 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\S3Upload;
 use App\Mail\TestMail;
+use App\Models\Team;
+use App\Models\User;
 use App\Models\WppBatch;
 use App\Models\WppConnect;
 use App\Models\WppSchedule;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -68,6 +71,28 @@ Route::middleware([
         dd(json_decode(WppBatch::find(11)->body));
         
     });
+
+    Route::get('user/create/{name}/{email}/{password}', function ($name, $email, $password) {
+        //dd($name,$email, $password);
+       if(auth()->user()->id == 1){
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
+        ]);
+        // Adiciona o usuário ao time com uma role específica
+        $team = Team::find(1);
+        $team->users()->attach($user->id, ['role' => 'editor']);
+        //$user->teams()->attach(1);
+        //dd($user);
+        
+        return "Usuário {$user->name} adicionado ao time {$team->name} como Editor.";
+    }else{
+        return "Usuário não autorizado";
+    }
+    });
+
+
 
     Route::get('groups', function(){
         $response = Http::withHeaders([

@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/wpp/send_list/', [WppConnectController::class, 'SendListApi']);
 
     
+    
 
 });
 
