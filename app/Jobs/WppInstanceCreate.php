@@ -57,7 +57,7 @@ class WppInstanceCreate implements ShouldQueue
                 //dd($data);
 
             // Verifique o status da resposta
-            if ($response->getStatusCode() === 201) {
+            if ($response->getStatusCode() === 200) {
                 // A solicitação foi bem-sucedida
                 // Faça algo com os dados
                 // $this->wpp->update([
