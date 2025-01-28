@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\WppConnect;
 use App\Models\WppMessage;
 use App\Models\WppMessageReturn;
 use Illuminate\Http\Request;
@@ -99,9 +100,15 @@ class WebhookController extends Controller
 
         
 
-         if(isset($this->entry->data->status)){
+        if(isset($this->entry->data->status)){
              $this->status = $this->entry->data->status;
              $this->status();
+        }
+
+        if($this->entry->event == "connection.update"){
+            $wpp = WppConnect::where('session', $this->entry->data->sessionId);
+            $wpp->status = $this->entry->data->status;
+            $wpp->save();
         }
      
         return response('recebido', 201);
