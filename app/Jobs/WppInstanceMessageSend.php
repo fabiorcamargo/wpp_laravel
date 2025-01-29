@@ -39,7 +39,7 @@ class WppInstanceMessageSend implements ShouldQueue
         $id = $wpp->user_id;
         $user = User::find($id);
 
-        $this->url = $user->url_api . '/messages/send';
+        $this->url = $user->url_api . $wpp->session  . '/messages/send';
         $this->token = PersonalAccessToken::where('tokenable_id', $user->id)->first()->token;
     }
 
