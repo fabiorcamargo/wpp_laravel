@@ -27,6 +27,7 @@ class WppInstanceMessageSend implements ShouldQueue
     protected $message;
     protected $batch;
     protected $token;
+    protected $url;
 
 
         public function __construct($mensagem)
@@ -38,7 +39,7 @@ class WppInstanceMessageSend implements ShouldQueue
         $id = $wpp->user_id;
         $user = User::find($id);
 
-        $this->url = $user->url_api . '/sessions/add';
+        $this->url = $user->url_api . '/messages/send';
         $this->token = PersonalAccessToken::where('tokenable_id', $user->id)->first()->token;
     }
 
@@ -51,7 +52,6 @@ class WppInstanceMessageSend implements ShouldQueue
         $wpp = $this->message->wpp;
 
         //dd($this->message->phone);
-        $url = $wpp->url_api . '/' . $wpp->session . '/' . 'messages/send';
         
         $body = [
             "jid"=> $this->message->phone,
