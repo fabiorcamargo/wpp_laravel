@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use App\Models\WppConnect;
 use App\Models\WppMessage;
 use Illuminate\Bus\Queueable;
@@ -25,12 +26,20 @@ class WppInstanceMessageSend implements ShouldQueue
 
     protected $message;
     protected $batch;
+    protected $token;
 
 
         public function __construct($mensagem)
     {
         $this->message = $mensagem;
         $mensagem->batch !== null ? $this->batch = $mensagem->batch : "";
+        $wpp = $mensagem->wpp()->first();
+
+        $id = $wpp->user_id;
+        $user = User::find($id);
+
+        $this->url = $user->url_api . '/sessions/add';
+        $this->token = PersonalAccessToken::where('tokenable_id', $user->id)->first()->token;
     }
 
     /**
@@ -55,7 +64,7 @@ class WppInstanceMessageSend implements ShouldQueue
             
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                    'x-api-key' => PersonalAccessToken::where('tokenable_id', auth()->user()->id)->first()->token
+                    'x-api-key' => $this->token
             ])->post($url, $body);
 
             //dd(json_decode($response, true));
