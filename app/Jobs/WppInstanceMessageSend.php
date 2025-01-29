@@ -65,7 +65,7 @@ class WppInstanceMessageSend implements ShouldQueue
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                     'x-api-key' => $this->token
-            ])->post($url, $body);
+            ])->post($this->url, $body);
 
             //dd(json_decode($response, true));
 
