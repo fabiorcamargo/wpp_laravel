@@ -16,5 +16,6 @@
             </div>
         </div>
         <label class="modal-backdrop" for="my_modal{{ $id }}">Close</label>
+        
     </div>
 </div>

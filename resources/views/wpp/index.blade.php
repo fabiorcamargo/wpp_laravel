@@ -22,9 +22,19 @@
 
 
             <div class="card-body">
-                <h2 class="card-title">Gerenciamento de Instancia</h2>
-                {{--<p>If a dog chews shoes whose shoes does he choose?</p>--}}
-                <div class="overflow-x-auto">
+                <div class="flex justify-between items-center">
+                    <h2 class="card-title">Gerenciamento de Instância</h2>
+                    <button onclick="location.reload()" class="btn btn-neutral">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h5M20 20v-5h-5M4 12a8 8 0 0116 0M20 12a8 8 0 01-16 0" />
+                        </svg>
+                        Atualizar
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto mt-4">
                     <table class="table">
                         <!-- head -->
                         <thead>
@@ -33,8 +43,6 @@
                                 <th>Nome</th>
                                 <th>Whatsapp</th>
                                 <th>Status</th>
-
-                                {{--<th>Favorite Color</th>--}}
                                 <th>Ação</th>
                             </tr>
                         </thead>
@@ -44,13 +52,14 @@
                             <dialog id="delete_modal" class="modal">
                                 <div class="modal-box">
                                     <h3 class="text-lg font-bold">Excluir Instância</h3>
-                                    <p class="py-4">Você realmente deseja excluir a instância?<br> Essa ação é irreversível.</p>
+                                    <p class="py-4">Você realmente deseja excluir a instância?<br> Essa ação é
+                                        irreversível.</p>
                                     <div class="modal-action">
                                         <form method="dialog">
                                             <!-- if there is a button in form, it will close the modal -->
                                             <div>
-                                                <form action="{{ route('wpp.destroy', ['wpp' => $data]) }}" method="POST"
-                                                    class="inline-block">
+                                                <form action="{{ route('wpp.destroy', ['wpp' => $data]) }}"
+                                                    method="POST" class="inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-error px-10">
@@ -71,13 +80,13 @@
                                     <div class="flex items-center space-x-3">
                                         <div>
                                             <a href="{{route('wpp.show', ['wpp' => $data])}}">
-                                            <div class="">{{ $data->session }}</div>
+                                                <div class="">{{ $data->session }}</div>
                                             </a>
                                             {{--<div class="text-sm opacity-50">United States</div>--}}
                                         </div>
                                     </div>
                                 </td>
-                                
+
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div>
@@ -90,7 +99,7 @@
                                     </div>
                                 </td>
 
-                                
+
 
                                 <td>
                                     <div class="flex items-center space-x-3">
@@ -102,7 +111,7 @@
                                     </div>
                                 </td>
 
-                                
+
 
                                 <td>
                                     {{-- @if($data->status == 'CRIADO') --}}
@@ -118,7 +127,7 @@
                                 <th>
                                     <div class="join">
                                         <div class="join-item tooltip" data-tip="Excluir">
-                                            
+
                                             <form action="{{ route('wpp.destroy', ['wpp' => $data]) }}" method="POST"
                                                 class="inline-block">
                                                 @csrf
@@ -127,7 +136,7 @@
                                                     Excluir
                                                 </button>
                                             </form>
-                                            
+
                                         </div>
 
                                     </div>
@@ -201,5 +210,5 @@
         <label class="modal-backdrop" for="my_modal_7">Close</label>
     </div>
 
-    
+
 </x-app-layout>
