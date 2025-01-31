@@ -30,33 +30,17 @@ class WppInstanceMessageSend implements ShouldQueue
     protected $url;
 
 
-    public function __construct($mensagem)
+        public function __construct($mensagem)
     {
         $this->message = $mensagem;
-        $mensagem->batch !== null ? $this->batch = $mensagem->batch : null;
-    
+        $mensagem->batch !== null ? $this->batch = $mensagem->batch : "";
         $wpp = $mensagem->wpp()->first();
-    
-        if (!$wpp) {
-            // Mensagem não associada a Wpp, então precisamos abortar ou tratar
-            throw new \Exception("Wpp não encontrado para a mensagem {$mensagem->id}");
-        }
-    
+
         $id = $wpp->user_id;
         $user = User::find($id);
-    
-        if (!$user) {
-            // Usuário não encontrado
-            throw new \Exception("Usuário não encontrado para Wpp {$wpp->id}");
-        }
-    
+
         $this->url = $user->url_api . $wpp->session  . '/messages/send';
-        $this->token = PersonalAccessToken::where('tokenable_id', $user->id)->first()->token ?? null;
-    
-        if (!$this->token) {
-            // Token não encontrado
-            throw new \Exception("Token de acesso não encontrado para o usuário {$user->id}");
-        }
+        $this->token = PersonalAccessToken::where('tokenable_id', $user->id)->first()->token;
     }
 
     /**
