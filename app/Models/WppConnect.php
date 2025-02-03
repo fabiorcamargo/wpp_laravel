@@ -47,5 +47,10 @@ class WppConnect extends Model
         return $this->hasOne(WppQr::class);
     }
 
+    public function getImage(): HasMany
+    {
+        return $this->hasMany(WppImage::class, 'wpp_connect_id', 'id');
+    }
+
 }
 

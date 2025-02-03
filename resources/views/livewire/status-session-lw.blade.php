@@ -3,19 +3,13 @@
         @if ($isVisible && session()->has('message'))
         <div class="px-4 py-2" id="notification">
             <div role="alert" class="alert alert-success">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6 shrink-0 stroke-current"
-                  fill="none"
-                  viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>{{ session('message') }}</span>
-              </div>
+            </div>
         </div>
         @endif
         <div class="card-body">
@@ -90,30 +84,31 @@
     @if($status == 'wait_for_qrcode_auth')
 
     <!-- Qr Code Modal -->
-<input type="checkbox" id="my_modal_qr" class="modal-toggle" />
-<div class="modal modal-open">
-    <div class="modal-box">
-        <h3 class="text-lg font-bold text-center">Capture o QR Code para iniciar a instância:</h3>
-        
-        <div class="flex flex-col items-center justify-center pt-6">
-            <img src="{{ $qr }}" alt="QR Code" class="w-40 h-40 border rounded-lg shadow-lg">
-            {{-- <img class="inline-block" src="{{ route('qrcode', ['id' => $id]) }}" alt="QRCode"> --}}
-            <p class="pt-2">Já capturou o QR Code? clique em atualizar.</p>
-            <button onclick="location.reload()" class="btn btn mt-4 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                        d="M4 4v5h5M20 20v-5h-5M4 12a8 8 0 0116 0M20 12a8 8 0 01-16 0" />
-                </svg>
-                Atualizar
-            </button>
-        </div>
-    </div>
+    <input type="checkbox" id="my_modal_qr" class="modal-toggle" />
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold text-center">Capture o QR Code para iniciar a instância:</h3>
 
-        
+            <div class="flex flex-col items-center justify-center pt-6">
+                <img src="{{ $qr }}" alt="QR Code" class="w-40 h-40 border rounded-lg shadow-lg">
+                {{-- <img class="inline-block" src="{{ route('qrcode', ['id' => $id]) }}" alt="QRCode"> --}}
+                <p class="pt-2">Já capturou o QR Code? clique em atualizar.</p>
+                <button onclick="location.reload()" class="btn btn mt-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h5M20 20v-5h-5M4 12a8 8 0 0116 0M20 12a8 8 0 01-16 0" />
+                    </svg>
+                    Atualizar
+                </button>
+            </div>
+        </div>
+
+
         <label class="modal-backdrop" for="my_modal_qr">Close</label>
         <button wire:click="render" class="btn btn-error">Fechar</button>
     </div>
 
     @endif
-      
+
 </div>

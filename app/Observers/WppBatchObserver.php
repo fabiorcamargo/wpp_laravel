@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Jobs\WppInstanceMessageSend;
 use App\Models\WppBatch;
+use Illuminate\Support\Facades\Log;
 
 class WppBatchObserver
 {
@@ -17,7 +18,14 @@ class WppBatchObserver
         $msg = $wppBatch->msg;
         $time = $wppBatch->delay;
 
-        // Pegando os nomes das colunas
+        //dd($body);
+
+        // Verificando se o corpo tem dados suficientes
+        if (empty($body) || count($body) <= 1) {
+            return; // Caso não haja dados, a execução é interrompida
+        }
+
+        // Pegando os nomes das colunas (primeira linha do body)
         $colunas = $body[0]; // Primeira linha do body contém os nomes das colunas
 
         // Iterando sobre os dados (começando pela segunda linha)
@@ -33,7 +41,13 @@ class WppBatchObserver
             }
 
             // Validando e ajustando o telefone
-            $phone = strlen($linha[1]) < 10 ? "55" . $linha[1] : $linha[1];
+            $phone = preg_replace('/\D/', '', $linha[1]); // Remove qualquer caractere não numérico
+            if (strlen($phone) < 10) {
+                $phone = "55" . $phone; // Supondo que o número de telefone seja nacional
+            }
+
+            // Garantir que o delay seja no mínimo 1
+            $time = max($time, 1);
 
             // Preparando os dados para a criação da mensagem
             $data = [
@@ -43,13 +57,18 @@ class WppBatchObserver
                 'group' => false
             ];
 
+            //dd($data);
+
             $mensagem = $wpp->Messages()->create($data);
             $mensagem->batch = $wppBatch;
 
             // Disparando o envio da mensagem
-            dispatch(new WppInstanceMessageSend($mensagem, $wppBatch))->delay($time);
-            
-            
+            try {
+                dispatch(new WppInstanceMessageSend($mensagem))->delay($time);
+            } catch (\Exception $e) {
+                // Aqui podemos logar ou tratar o erro de envio, caso necessário
+                Log::error('Erro ao enviar mensagem para o número ' . $phone . ': ' . $e->getMessage());
+            }
 
             // Aumentando o tempo de delay para a próxima mensagem
             $time = $time + $wppBatch->delay;
@@ -61,7 +80,7 @@ class WppBatchObserver
      */
     public function updated(WppBatch $wppBatch): void
     {
-        //
+        // Lógica para quando o WppBatch for atualizado (se necessário)
     }
 
     /**
@@ -69,7 +88,7 @@ class WppBatchObserver
      */
     public function deleted(WppBatch $wppBatch): void
     {
-        //
+        // Lógica para quando o WppBatch for deletado (se necessário)
     }
 
     /**
@@ -77,7 +96,7 @@ class WppBatchObserver
      */
     public function restored(WppBatch $wppBatch): void
     {
-        //
+        // Lógica para quando o WppBatch for restaurado (se necessário)
     }
 
     /**
@@ -85,6 +104,6 @@ class WppBatchObserver
      */
     public function forceDeleted(WppBatch $wppBatch): void
     {
-        //
+        // Lógica para quando o WppBatch for permanentemente deletado (se necessário)
     }
 }

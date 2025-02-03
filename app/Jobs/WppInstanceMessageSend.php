@@ -13,33 +13,66 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class WppInstanceMessageSend implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
-
     protected $message;
     protected $batch;
     protected $token;
     protected $url;
+    protected $type;
+    protected $text;
+    protected $img;
+    protected $body;
 
-
-        public function __construct($mensagem)
+    /**
+     * Create a new job instance.
+     */
+    public function __construct($mensagem)
     {
         $this->message = $mensagem;
-        $mensagem->batch !== null ? $this->batch = $mensagem->batch : "";
-        $wpp = $mensagem->wpp()->first();
+        $this->type = isset(json_decode($mensagem->body)->img) && json_decode($mensagem->body)->img !== "" ? "img" : "text";
+        //dd(json_decode($mensagem->body));
+        // Corrigindo a criação do corpo com array ao invés de string JSON
+        if ($this->type == "img") {
+            // Certificando-se de que a URL e o caption estão corretamente formatados
+            $this->body = [
+                'jid' => $this->message->phone,
+                'type' => 'number',
+                'message' => [
+                    'image' => [
+                        'url' => json_decode($this->message->body)->img
+                    ],
+                    'caption' => json_decode($this->message->body)->text,
+                ],
+                'options' => ['quoted' => null]
+            ];
+        } else {
+            // Para mensagens de texto, garantindo a estrutura correta
+            $this->body = [
+                'jid' => $this->message->phone,
+                'message' => [
+                    'text' => json_decode($this->message->body)->text
+                ]
+            ];
+        }
+        dd($this->body);
 
+        // Condicional para definir a batch
+        $mensagem->batch !== null ? $this->batch = $mensagem->batch : "";
+
+        // Obtenção do usuário associado ao WppConnect
+        $wpp = $mensagem->wpp()->first();
         $id = $wpp->user_id;
         $user = User::find($id);
 
-        $this->url = $user->url_api . $wpp->session  . '/messages/send';
+        // Configuração da URL da API do WhatsApp
+        $this->url = $user->url_api . '/' . $wpp->session  . '/messages/send';
+
+        // Obtendo o token de acesso do usuário
         $this->token = PersonalAccessToken::where('tokenable_id', $user->id)->first()->token;
     }
 
@@ -48,51 +81,30 @@ class WppInstanceMessageSend implements ShouldQueue
      */
     public function handle(): void
     {
-
-        $wpp = $this->message->wpp;
-
-        //dd($this->message->phone);
-        
-        $body = [
-            "jid"=> $this->message->phone,
-            "message" => [
-                "text" => $this->message->body
-            ]
-        ];
-
         try {
-            
+            // Envio da requisição HTTP com cabeçalhos e corpo
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                    'x-api-key' => $this->token
-            ])->post($this->url, $body);
-
-            //dd(json_decode($response, true));
-
+                'x-api-key' => $this->token
+            ])->post($this->url, $this->body); // Passando o corpo como array diretamente
 
             // Verifique o status da resposta
             if ($response->getStatusCode() === 200) {
+                $data = json_decode($response, true);
 
-            $data = json_decode($response, true);
-            //dd($datakey);
+                // Atribuindo o ID da mensagem no WhatsApp e o status
+                $data['wppid'] = $data['key']['id'];
+                $data['status'] = "ENVIADO";
 
-            $data['wppid'] = $data['key']['id'];
-            //$data['phone'] = $data['key']['remoteJid'];
-            $data['status'] = "ENVIADO";
+                // Atualizando o status da mensagem no banco de dados
+                $this->message->update($data);
 
-                // A solicitação foi bem-sucedida
-                // Faça algo com os dados
-
-            $this->message->update($data);
-
-            
-
-            if($this->batch !== null){
-                $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
-                $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
-                $this->batch->save();
-            }
-                
+                // Atualizando o progresso da batch, caso exista
+                if ($this->batch !== null) {
+                    $n = $this->batch->status / 100 * count(json_decode($this->batch->body, true)) + 1;
+                    $this->batch->status = $n / count(json_decode($this->batch->body, true)) * 100;
+                    $this->batch->save();
+                }
             } else {
                 // Lidar com erros de resposta HTTP
                 echo 'Erro na solicitação: ' . $response->getStatusCode();
@@ -104,16 +116,16 @@ class WppInstanceMessageSend implements ShouldQueue
                 $response = $e->getResponse();
                 $statusCode = $response->getStatusCode();
                 $errorBody = $response->getBody()->getContents();
-                // Faça o que quiser com a resposta de erro
                 echo "Erro na solicitação: Status $statusCode, Response: $errorBody";
 
+                // Atualizando o status de erro da mensagem
                 $data['status'] = "ERRO";
-
                 $this->message->update($data);
             } else {
                 // Lidar com outros tipos de erros (por exemplo, problemas de rede)
                 echo "Erro na solicitação: " . $e->getMessage();
 
+                // Atualizando o status de erro da mensagem
                 $data['status'] = "ERRO";
                 $this->message->update($data);
             }
