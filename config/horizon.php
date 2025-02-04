@@ -182,7 +182,7 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['zapfabio'],
+            'queue' => ['default', 'zapfabio'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 5,
