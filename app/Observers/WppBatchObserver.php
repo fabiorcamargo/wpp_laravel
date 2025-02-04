@@ -64,7 +64,7 @@ class WppBatchObserver
 
             // Disparando o envio da mensagem
             try {
-                dispatch(new WppInstanceMessageSend($mensagem))->onQueue('zapfabio')->delay($time);
+                dispatch(new WppInstanceMessageSend($mensagem))->delay($time);
             } catch (\Exception $e) {
                 // Aqui podemos logar ou tratar o erro de envio, caso necessário
                 Log::error('Erro ao enviar mensagem para o número ' . $phone . ': ' . $e->getMessage());
