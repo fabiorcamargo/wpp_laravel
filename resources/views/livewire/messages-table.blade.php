@@ -23,7 +23,7 @@
                         <td>{{ $mensagem->updated_at->format('d/m/y H:i:s') }}</td>
                         <td>{{ $mensagem->phone }}</td>
                         @if($mensagem->type == "chat")
-                        <td>{{ $mensagem->body }}</td>
+                        <td>{{ json_encode($mensagem->body) }}</td>
                         @elseif($mensagem->type == "img")
                         <td>Imagem</td>
                         @elseif($mensagem->type == "list")

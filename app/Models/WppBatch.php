@@ -18,6 +18,10 @@ class WppBatch extends Model
         'delay'
     ];
 
+    protected $casts = [
+        'msg' => 'array', // Permite armazenar e recuperar arrays no banco de dados
+    ];
+
     public function wpp(): BelongsTo
     {
         return $this->belongsTo(WppConnect::class, 'wpp_connect_id', 'id');

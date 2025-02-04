@@ -105,7 +105,7 @@ class CsvConverter extends Component
         $this->wpp->Batch()->create([
             'type' => $this->type,
             'img' => $this->selectedPhoto,
-            'msg' => '{"img": "'.$this->selectedPhoto.'", "text": "'.$this->msg.'"}',
+            'msg' => ["img"=> $this->selectedPhoto, "text"=> $this->msg],
             'body' => json_encode($this->data),
             'status' => 0,
             'delay' => $this->delay
