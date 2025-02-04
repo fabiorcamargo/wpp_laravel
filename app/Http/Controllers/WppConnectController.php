@@ -262,7 +262,7 @@ class WppConnectController extends Controller
         $data = [
             'phone' => $phone,
             'type' => 'chat',
-            'body' => json_encode($body),
+            'body' => $body,
             'group' => $group
         ];
 
