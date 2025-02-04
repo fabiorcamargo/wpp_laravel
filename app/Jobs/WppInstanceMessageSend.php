@@ -59,7 +59,7 @@ class WppInstanceMessageSend implements ShouldQueue
                 ]
             ];
         }
-        dd($this->body);
+        //dd($this->body);
 
         // Condicional para definir a batch
         $mensagem->batch !== null ? $this->batch = $mensagem->batch : "";
