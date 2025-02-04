@@ -32,6 +32,8 @@ class SendMsgForm extends Component
     {
         $this->validate();
 
+        //dd($this->msg);
+
         $wpp = new WppConnectController;
         $wpp->SendMessage($this->session, $this->phone, $this->msg, false);
 

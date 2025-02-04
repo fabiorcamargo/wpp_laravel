@@ -36,6 +36,7 @@ class WppInstanceMessageSend implements ShouldQueue
         $this->message = $mensagem;
         $this->type = isset(json_decode($mensagem->body)->img) && json_decode($mensagem->body)->img !== "" ? "img" : "text";
         //dd(json_decode($mensagem->body));
+        //dd(json_decode($mensagem));
         // Corrigindo a criação do corpo com array ao invés de string JSON
         if ($this->type == "img") {
             // Certificando-se de que a URL e o caption estão corretamente formatados

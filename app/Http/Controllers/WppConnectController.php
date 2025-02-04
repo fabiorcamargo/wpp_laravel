@@ -257,13 +257,16 @@ class WppConnectController extends Controller
             //dd($phone);
         }
         //dd($phone);
+        $body = ['img' => '', 'text' => $msg];
 
         $data = [
             'phone' => $phone,
             'type' => 'chat',
-            'body' => $msg,
+            'body' => json_encode($body),
             'group' => $group
         ];
+
+        //dd($data);
 
         $mensagem = $wpp->Messages()->create($data);
 
