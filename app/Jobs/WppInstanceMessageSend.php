@@ -54,7 +54,7 @@ class WppInstanceMessageSend implements ShouldQueue
             ];
         } else {
             // Para mensagens de texto, garantindo a estrutura correta
-            dd($this->message->body);
+            //dd($this->message->body);
             $this->body = [
                 'jid' => $this->message->phone,
                 'message' => [
