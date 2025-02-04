@@ -44,7 +44,7 @@
             <div class="modal-box">
                 <h3 class="text-lg font-bold">Insira as informações para mensagem:</h3>
 
-                @livewire('send-msg-form', ['session' => $wpp->session])
+                @livewire('send-msg-form', ['session' => $wpp->session, 'wpp' => $wpp])
 
             </div>
             <form method="dialog" class="modal-backdrop">

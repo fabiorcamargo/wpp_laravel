@@ -257,12 +257,11 @@ class WppConnectController extends Controller
             //dd($phone);
         }
         //dd($phone);
-        $body = ['img' => '', 'text' => $msg];
 
         $data = [
             'phone' => $phone,
             'type' => 'chat',
-            'body' => $body,
+            'body' => $msg,
             'group' => $group
         ];
 
